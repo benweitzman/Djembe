@@ -1,0 +1,14 @@
+<h2>{{ album }}</h2>
+{% if album.tagcount_set.all %}
+    <h5>tags</h5>
+    <ul>
+    {% for tagcount in album.tagcount_set.all %}
+        <li>{{ tagcount.tag.name }} ({{ tagcount.count }})</li>
+    {% endfor %}
+    </ul>
+{% endif %}
+<form action="./addtag/" method="POST">
+    {% csrf_token %}
+    <input type="text" name="tag"/>
+    <input type="submit" />
+</form>

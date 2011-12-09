@@ -1,0 +1,28 @@
+{% if artists %}
+    <ul>
+        {% for artist in artists %}
+            <li>
+                {{ artist.name }}
+                {% if artist.albums.all %}
+                    <ul>
+                        {% for album in artist.albums.all %}
+                            <li>{{ album}}</li>
+                            {% if album.tags.all %}
+                                <h6>Tags</h6>
+                                <ul>
+                                {% for tag in album.tags.all %}
+                                    <li>{{ tag.name }}</li>
+                                {% endfor %}
+                                </ul>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    no album
+                {% endif %}
+            </li>
+        {%  endfor %}
+    </ul>
+{%  else %}
+    No artists available.
+{% endif %}
