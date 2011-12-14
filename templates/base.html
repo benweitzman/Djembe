@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Djembe{% endblock %}</title>
+    <link rel="stylesheet" href="/media/styles/main.css" />
+    <script src=" https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script>
+        function addDefault(a) {
+            a.data("default",a.val());
+            a.focus(function(e) {
+                if ($(e.target).val() == $(e.target).data("default")) $(e.target).val("");
+            });
+            a.blur(function (e) {
+                if ($(e.target).val() == "") $(e.target).val($(e.target).data("default"));
+            });
+        }
+        function autocomplete(a,b) {
+            a.data("type",b)
+            a.attr("autocomplete","off");
+            a.focus(function (e) {
+                $("#autocomplete").css("display","none");
+                $("#autocomplete").html("");
+                $("#autocomplete").width($(e.target).width());
+                newoffset = $(e.target).offset();
+                newoffset.top += $(e.target).height()+10
+                $("#autocomplete").css("top",newoffset.top+"px");
+                $("#autocomplete").css("left",newoffset.left+"px");
+            });
+            a.blur(function () {
+               $("#autocomplete").css("display","none");
+            });
+            a.keydown(function (e) {
+               switch (e.keyCode) {
+                   case 38:
+                       e.preventDefault();
+                       break;
+               }
+            });
+            a.keyup(function (e) {
+                console.log($(e.target).data("typed"));
+                switch(e.keyCode) {
+                    case 27://escape
+                        if ($(e.target).data("typed")) {
+                            $(e.target).val($(e.target).data("typed"));
+                        }
+                        $("#autocomplete").html("");
+                        $("#autocomplete").css("display","none");
+                        break;
+                    case 40://down
+                        $(e.target).data("selected",$(e.target).data("selected")+1)
+                        $("#autocomplete div").removeClass("autoselect");
+                        if ($(e.target).data("selected") >= $("#autocomplete div").length) {
+                            console.log("was: "+$(e.target).data("typed"));
+                            $(e.target).val($(e.target).data("typed"));
+                            $(e.target).data("selected",-1);
+                            break;
+                        }
+                        $($("#autocomplete div")[$(e.target).data("selected")]).addClass("autoselect");
+                        $(e.target).val($("#autocomplete div")[$(e.target).data("selected")].innerHTML);
+                        break;
+                    case 38://up
+                        $(e.target).data("selected",$(e.target).data("selected")-1);
+                        $("#autocomplete div").removeClass("autoselect");
+                        if ($(e.target).data("selected") == -1) {
+                            $(e.target).val($(e.target).data("typed"));
+                            break;
+                        } else if ($(e.target).data("selected") == -2) {
+                            $(e.target).data("selected", $("#autocomplete div").length-1);
+                        }
+                        $($("#autocomplete div")[$(e.target).data("selected")]).addClass("autoselect");
+                        $(e.target).val($("#autocomplete div")[$(e.target).data("selected")].innerHTML);
+                        break;
+                    default:
+                        $(e.target).data("typed",e.target.value);
+                        $(e.target).data("selected",-1);
+                        $.get("/ajax",
+                                {letters:a.val(),
+                                    kind:a.data("type")},
+                                function(data) {
+                                    $("#autocomplete").html("");
+                                    matches = $.parseJSON(data);
+                                    if (matches.length < 1) {
+                                        $("#autocomplete").css("display","none");
+                                    } else {
+                                        $("#autocomplete").css("display","block");
+                                    }
+                                    console.log($("center").filter(":animated"));
+                                    for (x in matches) {
+                                        match = document.createElement("div");
+                                        match.innerHTML = matches[x].name
+                                        $("#autocomplete").append(match);
+                                    }
+                                    $("#autocomplete div").mouseenter(function(e) {
+                                        $("#autocomplete div").removeClass("autoselect");
+                                        $(e.target).addClass("autoselect");
+                                    });
+                                    $("#autocomplete div").mouseleave(function (e) {
+                                       $(e.target).removeClass("autoselect");
+                                    });
+                                    $("#autocomplete div").mousedown(function(e) {
+                                       window.location = "/artists/"+$(e.target).html();
+                                    });
+                                }
+                        );
+                        break;
+                }
+            });
+        }
+        ctrldown = spacedown = spaceisdown = false;
+        $(document).ready(function () {
+            addDefault($("#hSearchArtist input"));
+            addDefault($("#hSearchAlbum input"));
+            autocomplete($("#hSearchArtist input"),"Artist");
+            autocomplete($("#hSearchAlbum input"),"Album");
+            autocomplete($("#centerSearch input"),"Artist");
+            $(document).keyup(function(e){
+                if (e.keyCode == 32) spacedown = spaceisdown = false;
+                if (e.keyCode == 17) ctrldown = false;
+            });
+            $("#centerSearch").click(function (e) {
+               if (e.target.type != "text") {
+                   $("#centerSearch").css("display","none");
+                   $("#centerSearch input").blur();
+               }
+            });
+            $(document).keydown(function (e) {
+                if (e.keyCode == 32) spaceisdown = true;
+                if (e.keyCode == 17 && !spaceisdown) ctrldown = true
+                if (e.keyCode == 32 && ctrldown && !spacedown) {
+                    spacedown = true
+                    if ($("#centerSearch").css("display") == "none") {
+                        $("#centerSearch").fadeIn("fast",function () {
+                            $("#center").animate({
+                                top:0
+                            },300);
+                        });
+                    } else {
+                        $("#center").animate({
+                            top:'-1000px'
+                        },300,function () {
+                            $("#centerSearch").fadeOut();
+                        });
+                    }
+                    $("#centerSearch input").focus();
+                }
+                if (e.keyCode == 27) {
+                    if ($("#centerSearch").css("display") != "none") {
+                        $("#centerSearch").css("display","none");
+                        $("#centerSearch input").blur();
+                    }
+                }
+            });
+
+            $("#centerSearch input").keydown(function(e) {
+               switch(e.keyCode) {
+                   case 9:
+                       return false
+                       break;
+               }
+            });
+        });
+    </script>
+</head>
+
+<body>
+<div id="autocomplete"></div>
+<div id="centerSearch">
+    <div id="background"></div>
+    <div id="center">
+        <form>
+            <input type="text" value="Search"/>
+        </form>
+    </div>
+</div>
+<div id="header">
+    {% block header %}
+        <div id="menu">
+            <a href="{% url Djembe.views.index %}">Home</a>
+            <a href="{% url groups.views.artistsIndex %}">Artists</a>
+        </div>
+        <div id="searchbar">
+            <form name="albums" class="search" id="hSearchAlbum">
+                <input type="text" value="Albums"/>
+            </form>
+            <form name="artists" class="search" id="hSearchArtist" action="/artists/" method="GET">
+                <input type="text" name="artist" value="Artists"/>
+            </form>
+        </div>
+        <hr />
+    {% endblock %}
+</div>
+
+<div id="content">
+    {% block content %}{% endblock %}
+</div>
+
+<div id="footer">
+    {% block footer %}
+        <hr />
+    {% endblock %}
+</div>
+</body>
+
+</html>

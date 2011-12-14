@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 admin.autodiscover()
@@ -15,8 +16,12 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^artists/$','groups.views.index'),
+    url(r'^$','Djembe.views.index'),
+    url(r'^artists/$','groups.views.artistsIndex'),
     url(r'^artists/(?P<artist_name>[\w]+)/$','groups.views.artistPage'),
     url(r'^albums/(?P<album_name>[\w\s]+)/$','groups.views.albumPage'),
     url(r'^albums/(?P<album_name>[\w\s]+)/addtag/$','groups.views.addTag'),
+    url(r'^ajax/',include('ajax.urls')),
+    url(r'^media/(?P<path>.*)$', 'django.views.static.serve',
+        {'document_root':settings.MEDIA_ROOT}),
 )

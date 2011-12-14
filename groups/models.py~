@@ -1,6 +1,5 @@
 from django.db import models
 from tags.models import Tag
-from photo.models import Photo
 
 class Album(models.Model):
     artists = models.ManyToManyField('Artist')
@@ -8,15 +7,15 @@ class Album(models.Model):
     name = models.CharField(max_length=100)
     released = models.DateField('Date released')
     tags = models.ManyToManyField(Tag,blank=True, through='TagCount')
-    photo = models.ManyToManyField(Photo,blank=True)
+    photo = models.CharField(max_length=400,blank=True)
 
     def __unicode__(self):
         return self.name
 
 class Artist(models.Model):
     name = models.CharField(max_length=100)
-    #albums = models.ManyToManyField('Album',blank=True,db_table="groups_album_artists")
-    photo = models.ManyToManyField(Photo,blank=True)
+    albums = models.ManyToManyField('Album',blank=True,db_table="groups_album_artists")
+    photo = models.CharField(max_length=400, blank=True)
 
     def __unicode__(self):
         return self.name

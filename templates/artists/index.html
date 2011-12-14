@@ -1,28 +1,32 @@
-{% if artists %}
-    <ul>
-        {% for artist in artists %}
-            <li>
-                {{ artist.name }}
-                {% if artist.albums.all %}
+{% extends "base.html" %}
+{% block content %}
+    {% if artists %}
+        <ul>
+            {% for artist in artists %}
+                <li>
+                    <a href="/artists/{{ artist.name }}">{{ artist.name }}</a>
                     <ul>
-                        {% for album in artist.albums.all %}
-                            <li>{{ album}}</li>
-                            {% if album.tags.all %}
-                                <h6>Tags</h6>
-                                <ul>
-                                {% for tag in album.tags.all %}
-                                    <li>{{ tag.name }}</li>
-                                {% endfor %}
-                                </ul>
-                            {% endif %}
-                        {% endfor %}
+                        {% if artist.album_set.all %}
+                            {% for album in artist.album_set.all %}
+                                <li><a href="/albums/{{ album }}">{{ album}}</a></li>
+                                {% if album.tags.all %}
+                                    <h6>Tags</h6>
+                                    <ul>
+                                        {% for tag in album.tags.all %}
+                                            <li>{{ tag.name }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            {% endfor %}
+
+                    {% else %}
+                        <li>no albums</li>
+                    {% endif %}
                     </ul>
-                {% else %}
-                    no album
-                {% endif %}
-            </li>
-        {%  endfor %}
-    </ul>
-{%  else %}
-    No artists available.
-{% endif %}
+                </li>
+            {%  endfor %}
+        </ul>
+    {%  else %}
+        No artists available.
+    {% endif %}
+{% endblock %}
