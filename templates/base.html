@@ -48,27 +48,27 @@
                         break;
                     case 40://down
                         $(e.target).data("selected",$(e.target).data("selected")+1)
-                        $("#autocomplete div").removeClass("autoselect");
-                        if ($(e.target).data("selected") >= $("#autocomplete div").length) {
+                        $("#autocomplete div.centerMatch").removeClass("autoselect");
+                        if ($(e.target).data("selected") >= $("#autocomplete div.centerMatch").length) {
                             console.log("was: "+$(e.target).data("typed"));
                             $(e.target).val($(e.target).data("typed"));
                             $(e.target).data("selected",-1);
                             break;
                         }
-                        $($("#autocomplete div")[$(e.target).data("selected")]).addClass("autoselect");
-                        $(e.target).val($("#autocomplete div")[$(e.target).data("selected")].innerHTML);
+                        $($("#autocomplete div.centerMatch")[$(e.target).data("selected")]).addClass("autoselect");
+                        $(e.target).val($("#autocomplete div.centerMatch")[$(e.target).data("selected")].innerHTML);
                         break;
                     case 38://up
                         $(e.target).data("selected",$(e.target).data("selected")-1);
-                        $("#autocomplete div").removeClass("autoselect");
+                        $("#autocomplete div.centerMatch").removeClass("autoselect");
                         if ($(e.target).data("selected") == -1) {
                             $(e.target).val($(e.target).data("typed"));
                             break;
                         } else if ($(e.target).data("selected") == -2) {
-                            $(e.target).data("selected", $("#autocomplete div").length-1);
+                            $(e.target).data("selected", $("#autocomplete div.centerMatch").length-1);
                         }
-                        $($("#autocomplete div")[$(e.target).data("selected")]).addClass("autoselect");
-                        $(e.target).val($("#autocomplete div")[$(e.target).data("selected")].innerHTML);
+                        $($("#autocomplete div.centerMatch")[$(e.target).data("selected")]).addClass("autoselect");
+                        $(e.target).val($("#autocomplete div.centerMatch")[$(e.target).data("selected")].innerHTML);
                         break;
                     default:
                         $(e.target).data("typed",e.target.value);
@@ -80,20 +80,43 @@
                                     //console.log("response received");
                                     $("#autocomplete").html("");
                                     matches = $.parseJSON(data);
-                                    if (matches.length < 1) {
+                                    console.log(matches);
+                                    if ($(e.target).data("type") != "mega") {
+                                        matches = matches[$(e.target).data("type")];
+                                    }
+                                    if (matches && matches.length < 1) {
                                         $("#autocomplete").css("display","none");
                                     } else {
                                         $("#autocomplete").css("display","block");
                                     }
-                                    //console.log($("center").filter(":animated"));
-                                    for (x in matches) {
-                                        match = document.createElement("div");
-                                        if (matches[x].name) {
-                                            match.innerHTML = matches[x].name;
-                                        } else if(matches[x].username) {
-                                            match.innerHTML = matches[x].username;
+                                    if ($(e.target).data("type") != "mega") {
+                                        for (x in matches) {
+                                            match = document.createElement("div");
+                                            if (matches[x].name) {
+                                                match.innerHTML = matches[x].name;
+                                            } else if(matches[x].username) {
+                                                match.innerHTML = matches[x].username;
+                                            }
+                                            $(match).addClass("centerMatch");
+                                            $("#autocomplete").append(match);
                                         }
-                                        $("#autocomplete").append(match);
+                                    } else {
+                                        for (x in matches) {
+                                            separator = document.createElement("div");
+                                            $(separator).addClass("centerSeparator");
+                                            separator.innerHTML = x;
+                                            $("#autocomplete").append(separator);
+                                            for (b in matches[x]) {
+                                                match = document.createElement("div");
+                                                if (matches[x][b].name) {
+                                                    match.innerHTML = matches[x][b].name;
+                                                } else {
+                                                    match.innerHTML = matches[x][b].username;
+                                                }
+                                                $(match).addClass("centerMatch");
+                                                $("#autocomplete").append(match);
+                                            }
+                                        }
                                     }
                                     $("#autocomplete div").mouseenter(function(e) {
                                         $("#autocomplete div").removeClass("autoselect");
@@ -116,10 +139,10 @@
             addDefault($("#hSearchArtist input"));
             addDefault($("#hSearchAlbum input"));
             addDefault($("#hSearchUser input"));
-            autocomplete($("#hSearchArtist input"),"Artist");
-            autocomplete($("#hSearchAlbum input"),"Album");
-            autocomplete($("#hSearchUser input"),"User");
-            autocomplete($("#centerSearch input"),"Artist");
+            autocomplete($("#hSearchArtist input"),"artists");
+            autocomplete($("#hSearchAlbum input"),"albums");
+            autocomplete($("#hSearchUser input"),"users");
+            autocomplete($("#centerSearch input"),"mega");
             $(document).keyup(function(e){
                 if (e.keyCode == 32) spacedown = spaceisdown = false;
                 if (e.keyCode == 17) ctrldown = false;

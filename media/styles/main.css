@@ -1,5 +1,11 @@
+html {
+    width:100%;
+    height:100%;
+}
 body {
     background: #ddd;
+    margin: 0;
+    padding: 0;
     width:100%;
     height:100%;
 }
@@ -43,14 +49,22 @@ body {
     z-index: 10;
     display:none;
     border: 1px solid #111;
-    background: #fff;
 }
 
+#autocomplete div {
+    background: #fff;
+}
 #autocomplete div:not(:last-child) {
     border-bottom: 1px solid #111;
 }
 
-#autocomplete div.autoselect {
+#autocomplete div.centerSeparator {
+    text-align: center;
+    text-transform: capitalize;
+    background: #777;
+}
+
+#autocomplete div.autoselect:not(.centerSeparator) {
     background: #ccc;
 }
 
