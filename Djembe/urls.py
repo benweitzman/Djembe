@@ -12,16 +12,21 @@ urlpatterns = patterns('',
     # url(r'^Djembe/', include('Djembe.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+    #url(r'^forums/', include('djangobb_forum.urls', namespace='djangobb')),
     url(r'^$','Djembe.views.index'),
     url(r'^artists/$','groups.views.artistsIndex'),
     url(r'^artists/(?P<artist_name>[\w]+)/$','groups.views.artistPage'),
     url(r'^albums/(?P<album_name>[\w\s]+)/$','groups.views.albumPage'),
     url(r'^albums/(?P<album_name>[\w\s]+)/addtag/$','groups.views.addTag'),
     url(r'^ajax/',include('ajax.urls')),
+    url(r'^profile/',include('userprofile.urls')),
+    url(r'^user/$','userprofile.views.view'),
+    url(r'^user/(?P<username>[\w]+)','userprofile.views.view'),
+    url(r'^accounts/', include('registration.urls')),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve',
         {'document_root':settings.MEDIA_ROOT}),
 )

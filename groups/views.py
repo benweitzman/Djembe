@@ -8,7 +8,7 @@ def artistsIndex(request):
     if "artist" in request.GET:
         return HttpResponseRedirect("/artists/"+request.GET["artist"])
     artists = Artist.objects.all()[:5]
-    return render_to_response('artists/index.html',{'artists':artists})
+    return render_to_response('artists/index.html',{'artists':artists},context_instance=RequestContext(request))
 
 def artistPage(request, artist_name):
     return HttpResponse("Artist: %s" % artist_name)

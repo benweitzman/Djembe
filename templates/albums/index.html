@@ -1,3 +1,7 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
 <h2>{{ album }}</h2>
 {% if album.tagcount_set.all %}
     <h5>tags</h5>
@@ -10,5 +14,6 @@
 <form action="./addtag/" method="POST">
     {% csrf_token %}
     <input type="text" name="tag"/>
-    <input type="submit" />
+    <input type="submit" value="Add Tag"/>
 </form>
+{% endblock %}

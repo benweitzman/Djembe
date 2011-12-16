@@ -8,6 +8,12 @@ body {
     display:inline-block;
 }
 
+#page>* {
+    width:900px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
 #centerSearch {
     position: fixed;
     width:100%;
@@ -54,4 +60,19 @@ body {
     height:60px;
     width:80%;
     outline:none;
+}
+
+#userInfo {
+    float:right;
+    width:30%;
+}
+
+
+#userProfile {
+    float:left;
+    width:60%;
+}
+
+.clear {
+    clear:both;
 }

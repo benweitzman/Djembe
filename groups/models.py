@@ -2,6 +2,14 @@ from django.db import models
 from tags.models import Tag
 from photo.models import Photo
 
+RELEASE_TYPE = (
+    ("album","Album"),
+    ("ep","EP"),
+    ("single","Single"),
+    ("compilation","Compilation"),
+    ("anthology","Anthology"),
+)
+
 class Album(models.Model):
     artists = models.ManyToManyField('Artist')
     releases = models.ManyToManyField('Release',blank=True)
@@ -9,7 +17,7 @@ class Album(models.Model):
     released = models.DateField('Date released')
     tags = models.ManyToManyField(Tag,blank=True, through='TagCount')
     photo = models.ManyToManyField(Photo,blank=True)
-
+    releaseType = models.CharField(max_length=15,choices=RELEASE_TYPE,default="album")
     def __unicode__(self):
         return self.name
 

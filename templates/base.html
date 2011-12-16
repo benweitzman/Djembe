@@ -20,7 +20,7 @@
             a.focus(function (e) {
                 $("#autocomplete").css("display","none");
                 $("#autocomplete").html("");
-                $("#autocomplete").width($(e.target).width());
+                $("#autocomplete").width($(e.target).outerWidth());
                 newoffset = $(e.target).offset();
                 newoffset.top += $(e.target).height()+10
                 $("#autocomplete").css("top",newoffset.top+"px");
@@ -37,7 +37,7 @@
                }
             });
             a.keyup(function (e) {
-                console.log($(e.target).data("typed"));
+                //console.log($(e.target).data("typed"));
                 switch(e.keyCode) {
                     case 27://escape
                         if ($(e.target).data("typed")) {
@@ -77,6 +77,7 @@
                                 {letters:a.val(),
                                     kind:a.data("type")},
                                 function(data) {
+                                    //console.log("response received");
                                     $("#autocomplete").html("");
                                     matches = $.parseJSON(data);
                                     if (matches.length < 1) {
@@ -84,10 +85,14 @@
                                     } else {
                                         $("#autocomplete").css("display","block");
                                     }
-                                    console.log($("center").filter(":animated"));
+                                    //console.log($("center").filter(":animated"));
                                     for (x in matches) {
                                         match = document.createElement("div");
-                                        match.innerHTML = matches[x].name
+                                        if (matches[x].name) {
+                                            match.innerHTML = matches[x].name;
+                                        } else if(matches[x].username) {
+                                            match.innerHTML = matches[x].username;
+                                        }
                                         $("#autocomplete").append(match);
                                     }
                                     $("#autocomplete div").mouseenter(function(e) {
@@ -110,8 +115,10 @@
         $(document).ready(function () {
             addDefault($("#hSearchArtist input"));
             addDefault($("#hSearchAlbum input"));
+            addDefault($("#hSearchUser input"));
             autocomplete($("#hSearchArtist input"),"Artist");
             autocomplete($("#hSearchAlbum input"),"Album");
+            autocomplete($("#hSearchUser input"),"User");
             autocomplete($("#centerSearch input"),"Artist");
             $(document).keyup(function(e){
                 if (e.keyCode == 32) spacedown = spaceisdown = false;
@@ -129,19 +136,23 @@
                 if (e.keyCode == 32 && ctrldown && !spacedown) {
                     spacedown = true
                     if ($("#centerSearch").css("display") == "none") {
+                        $(document.activeElement).blur();
                         $("#centerSearch").fadeIn("fast",function () {
                             $("#center").animate({
                                 top:0
-                            },300);
+                            },300, function () {
+                                $("#centerSearch input").focus();
+                            });
                         });
                     } else {
+                        $("#centerSearch input").blur();
                         $("#center").animate({
                             top:'-1000px'
                         },300,function () {
                             $("#centerSearch").fadeOut();
                         });
                     }
-                    $("#centerSearch input").focus();
+
                 }
                 if (e.keyCode == 27) {
                     if ($("#centerSearch").css("display") != "none") {
@@ -167,13 +178,25 @@
 <div id="centerSearch">
     <div id="background"></div>
     <div id="center">
-        <form>
+        <form target="_blank">
             <input type="text" value="Search"/>
         </form>
     </div>
 </div>
+<div id="page">
 <div id="header">
     {% block header %}
+        <div id="user">
+            {% if user.is_authenticated %}
+                <ul>
+                <li><a href="/profile/mine">{{ user.username }}</a></li>
+                <li><a href="/profile/edit">Edit</a></li>
+                <li><a href="{% url django.contrib.auth.views.logout %}">Logout</a></li>
+            </ul>
+            {% else %}
+                Not logged in
+            {% endif %}
+        </div>
         <div id="menu">
             <a href="{% url Djembe.views.index %}">Home</a>
             <a href="{% url groups.views.artistsIndex %}">Artists</a>
@@ -184,6 +207,9 @@
             </form>
             <form name="artists" class="search" id="hSearchArtist" action="/artists/" method="GET">
                 <input type="text" name="artist" value="Artists"/>
+            </form>
+            <form name="users" class="search" id="hSearchUser" action="/user/" method="GET">
+                <input type="text" name="username" value="Users"/>
             </form>
         </div>
         <hr />
@@ -198,6 +224,7 @@
     {% block footer %}
         <hr />
     {% endblock %}
+</div>
 </div>
 </body>
 
