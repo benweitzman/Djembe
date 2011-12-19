@@ -80,7 +80,6 @@
                                     //console.log("response received");
                                     $("#autocomplete").html("");
                                     matches = $.parseJSON(data);
-                                    console.log(matches);
                                     if ($(e.target).data("type") != "mega") {
                                         matches = matches[$(e.target).data("type")];
                                     }
@@ -97,6 +96,7 @@
                                             } else if(matches[x].username) {
                                                 match.innerHTML = matches[x].username;
                                             }
+                                            $(match).data("link","/"+$(e.target).data("type")+"/"+match.innerHTML)
                                             $(match).addClass("centerMatch");
                                             $("#autocomplete").append(match);
                                         }
@@ -113,6 +113,16 @@
                                                 } else {
                                                     match.innerHTML = matches[x][b].username;
                                                 }
+                                                $(match).data("link","/"+x+"/"+match.innerHTML);
+                                                if (matches[x][b].artists) {
+                                                    match.innerHTML += " by "
+                                                    for (artist in matches[x][b].artists) {
+                                                        match.innerHTML += matches[x][b].artists[artist].name
+                                                        if (artist != matches[x][b].artists.length-1) {
+                                                            match.innerHTML += ", "
+                                                        }
+                                                    }
+                                                }
                                                 $(match).addClass("centerMatch");
                                                 $("#autocomplete").append(match);
                                             }
@@ -126,7 +136,7 @@
                                        $(e.target).removeClass("autoselect");
                                     });
                                     $("#autocomplete div").mousedown(function(e) {
-                                       window.location = "/artists/"+$(e.target).html();
+                                       window.location = $(e.target).data("link")
                                     });
                                 }
                         );
@@ -190,6 +200,13 @@
                    case 9:
                        return false
                        break;
+                   case 13:
+                       if ($(".autoselect").length == 1) {
+                           console.log($(".autoselect").data("link"));
+                           window.location = $(".autoselect").data("link");
+                           return false;
+                       }
+                       break;
                }
             });
         });
@@ -201,7 +218,7 @@
 <div id="centerSearch">
     <div id="background"></div>
     <div id="center">
-        <form target="_blank">
+        <form target="_blank" action="/">
             <input type="text" value="Search"/>
         </form>
     </div>
@@ -223,6 +240,7 @@
         <div id="menu">
             <a href="{% url Djembe.views.index %}">Home</a>
             <a href="{% url groups.views.artistsIndex %}">Artists</a>
+            <a href="{% url forum.views.index %}">Forum</a>
         </div>
         <div id="searchbar">
             <form name="albums" class="search" id="hSearchAlbum">

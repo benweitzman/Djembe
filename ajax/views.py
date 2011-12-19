@@ -18,9 +18,15 @@ def index(request):
             if a:
                 response['artists'] = list(a)
         if kind == "albums" or 2 in searchtypes:
-            a = Album.objects.values('name').filter(name__startswith=letters)
-            if a:
-                response['albums'] = list(a)
+            a = Album.objects.filter(name__startswith=letters)
+            albumArtists = list()
+            for album in a:
+                newAlbum = dict()
+                newAlbum['name'] = album.name
+                newAlbum['artists'] = list(album.artists.all().values('name'))
+                albumArtists.append(newAlbum)
+            if albumArtists:
+                response['albums'] = albumArtists
         if kind == "users" or 3 in searchtypes:
             a = User.objects.values('username').filter(username__startswith=letters)
             if a:

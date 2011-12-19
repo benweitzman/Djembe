@@ -90,3 +90,94 @@ body {
 .clear {
     clear:both;
 }
+
+table {
+    width:100%;
+    border-collapse: collapse;
+    border-spacing:0;
+}
+
+table tr.colhead td, #posts .post .head {
+    background: -webkit-gradient(linear,left top,left bottom,from(#ddd),to(#ccc));
+	background: -moz-linear-gradient(center bottom,#ccc,#ddd);
+    font: bold 10pt Helvetica,Arial,sans-serif !important;
+	color: #575757 !important;
+	text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+}
+
+table tr.colhead td.latest {
+    width:70%;
+}
+
+table tr:not(.colhead) td {
+    background: #fff;
+}
+
+table .topic {
+    float:left;
+}
+
+table td {
+    border: 1px solid #aeaeae !important;
+    padding: 5px;
+    margin: 0px;
+}
+
+table td:not(:first-child) {
+    text-align: center;
+}
+
+table .lastPoster {
+    float:right;
+}
+
+.post .avatar {
+    float:left;
+    width:150px;
+    border-right: 1px solid #ddd;
+}
+.post .avatar img {
+    width:150px;
+}
+.post .text {
+    float:left;
+}
+
+.post div:not(.body):not(.clear) {
+    padding: 5px;
+}
+.post {
+    margin: 10px;
+    outline: 1px solid #aeaeae;
+    -webkit-box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+	-moz-box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+}
+
+.post .body {
+    background: #fff;
+}
+
+#newPost {
+    width:100%;
+    text-align: center;
+}
+
+#newPost h3{
+    width:100%;
+    text-align: left;
+}
+
+#newPost textarea {
+    width:80%;
+    height:200px;
+    padding: 8px;
+	background: #fff;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border: 1px solid #adadad;
+	font: 12pt 'Lucida Grande',Helvetica,Arial,sans-serif;
+	color: #444;
+	-webkit-box-shadow: inset -1px 1px 3px rgba(0,0,0,0.15);
+	-moz-box-shadow: inset -1px 1px 3px rgba(0,0,0,0.15);
+	-webkit-background-clip: padding-box;
+}

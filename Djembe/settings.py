@@ -127,6 +127,7 @@ INSTALLED_APPS = (
     'ajax',
     'registration',
     'userprofile',
+    'forum',
     #'djangobb_forum',
     #'haystack',
     #'messages',

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+    <h3>
+        <a href="{% url forum.views.index %}">
+            Forums</a>
+        &gt;
+        <a href="{% url forum.views.index %}{{ thread.forum_set.get.title }}">
+            {{ thread.forum_set.get.title }}</a>
+        &gt; {{ thread.title }}
+    </h3>
+    <div id="posts">
+    {% for post in thread.posts.all %}
+        <div class="post">
+            <div class="head">
+                #{{ post.id }}
+                <a href="/users/{{ post.poster.username }}">
+                    {{ post.poster.username }}
+                </a>
+                {{ post.datePosted|timesince }} ago
+                <a href="#">&uarr;</a>
+            </div>
+            <div class="body">
+                <div class="avatar">
+                    <img src="{{ post.poster.get_profile.avatar }}" />
+                </div>
+                <div class="text">
+                    {{ post.text|linebreaksbr }}
+                    {% if post.editor != NULL %}
+                        <br/>
+                        last edited
+                        {% with post.dateModified|timesince as delta %}
+                            {% ifequal delta "0 minutes" %}
+                                just now
+                            {% else %}
+                                {{ post.dateModified|timesince }} ago
+                            {% endifequal %}
+                        {% endwith %}
+                    {% endif %}
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+
+    <div id="newPost">
+        <h3>Post Reply</h3>
+        <form action="." method="POST">
+            {% csrf_token %}
+            <textarea name="body"></textarea>
+            <br />
+            <input type="submit"/>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <h3><a href="{% url forum.views.index %}">Forums</a> &gt; {{ forum.title }}</h3>
+    <table>
+        <tr class="colhead">
+            <td class="latest">Latest</td>
+            <td>Replies</td>
+            <td>Author</td>
+        </tr>
+        {% for thread in threads %}
+            <tr>
+                <td>
+                    <span class="topic">
+                        <a href="/forums/{{ forum.title }}/{{ thread.title }}">{{ thread.title }}</a>
+                    </span>
+                    <span class="lastPoster">by
+                    <a href="/users/{{ thread.latest_poster.username }}">
+                        {{ thread.latest_poster.username }}</a>
+                    {{ thread.latest_post|timesince }} ago</span>
+                </td>
+                <td>{{ thread.posts__count }}</td>
+                <td>{{ thread.op.username }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
