@@ -11,7 +11,16 @@ def artistsIndex(request):
     return render_to_response('artists/index.html',{'artists':artists},context_instance=RequestContext(request))
 
 def artistPage(request, artist_name):
-    return HttpResponse("Artist: %s" % artist_name)
+    artist = Artist.objects.get(name=artist_name)
+    albums = dict()
+    for release_type in RELEASE_TYPE:
+        catAlbums = Album.objects.filter(
+            releaseType=release_type[0],
+            artists=artist,
+        )
+        albums[release_type[1]] = catAlbums
+    return render_to_response('artists/viewArtist.html',context_instance=RequestContext(request,{"artist":artist,
+                                                                                                 "albums":albums,}))
 
 def albumPage(request, album_name):
     album = Album.objects.get(name=album_name)

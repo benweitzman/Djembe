@@ -1,5 +1,33 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load macros %}
+
+{% macro paginator %}
+    {% if posts.has_previous %}
+        <a href="/forums/{{thread.forum_set.get.title}}/{{thread.title}}/">&lt;&lt; First</a>
+        <a href="/forums/{{thread.forum_set.get.title}}/{{thread.title}}/{{posts.previous_page_number}}">&lt; Prev</a>
+        &nbsp;|&nbsp;
+    {% endif %}
+    {% if posts.has_other_pages %}
+        {% for index, page in showPages.items %}
+            {% if page.start_index == posts.start_index %}
+                {{page.start_index}}-{{page.end_index}}
+            {% else %}
+                <a href="/forums/{{thread.forum_set.get.title}}/{{thread.title}}/{{index|add:startPage|add:1}}">
+                    {{page.start_index}}-{{page.end_index}}
+                </a>
+            {% endif %}
+            {% if not forloop.last %}
+                &nbsp;|&nbsp;
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    {% if posts.has_next %}
+        &nbsp;|&nbsp;
+        <a href="/forums/{{thread.forum_set.get.title}}/{{thread.title}}/{{posts.next_page_number}}"> Next &gt;</a>
+        <a href="/forums/{{thread.forum_set.get.title}}/{{thread.title}}/{{pages|length}}"> Last &gt;&gt;</a>
+    {% endif %}
+{% endmacro %}
 
 {% block content %}
     <h3>
@@ -10,41 +38,49 @@
             {{ thread.forum_set.get.title }}</a>
         &gt; {{ thread.title }}
     </h3>
+    <div class="paginator">
+        {% usemacro paginator %}
+    </div>
     <div id="posts">
-    {% for post in thread.posts.all %}
-        <div class="post">
-            <div class="head">
-                #{{ post.id }}
-                <a href="/users/{{ post.poster.username }}">
-                    {{ post.poster.username }}
-                </a>
-                {{ post.datePosted|timesince }} ago
-                <a href="#">&uarr;</a>
-            </div>
-            <div class="body">
-                <div class="avatar">
+    {% for post in posts.object_list %}
+        <table class="post" id="post{{post.id}}">
+            <tr>
+                <td colspan="2" class="head">
+                    <a href="/forums/{{thread.forum_set.get.title}}/{{thread.title}}/reply/{{post.id}}">#{{ post.id }}</a>
+                    <a href="/users/{{ post.poster.username }}">
+                        {{ post.poster.username }}
+                    </a>
+                    {{ post.datePosted|timesince }} ago
+                    <a href="#">&uarr;</a>
+                </td>
+            </tr>
+            <tr class="body">
+                <td class="avatar">
                     <img src="{{ post.poster.get_profile.avatar }}" />
-                </div>
-                <div class="text">
-                    {{ post.text|linebreaksbr }}
-                    {% if post.editor != NULL %}
-                        <br/>
-                        last edited
-                        {% with post.dateModified|timesince as delta %}
-                            {% ifequal delta "0 minutes" %}
-                                just now
-                            {% else %}
-                                {{ post.dateModified|timesince }} ago
-                            {% endifequal %}
-                        {% endwith %}
-                    {% endif %}
-                </div>
-                <div class="clear"></div>
-            </div>
-        </div>
+                </td>
+                <td class="text">
+                    <div>
+                        {{ post.text|linebreaksbr }}
+                        {% if post.editor != NULL %}
+                            <br/><br/>
+                            Last edited by <a href="/users/{{post.editor.username}}">{{post.editor.username}}</a>
+                            {% with post.dateModified|timesince as delta %}
+                                {% ifequal delta "0 minutes" %}
+                                    just now
+                                {% else %}
+                                    {{ post.dateModified|timesince }} ago
+                                {% endifequal %}
+                            {% endwith %}
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+        </table>
     {% endfor %}
     </div>
-
+    <div class="paginator">
+        {% usemacro paginator %}
+    </div>
     <div id="newPost">
         <h3>Post Reply</h3>
         <form action="." method="POST">

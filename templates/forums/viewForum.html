@@ -3,6 +3,15 @@
 
 {% block content %}
   <h3><a href="{% url forum.views.index %}">Forums</a> &gt; {{ forum.title }}</h3>
+    [<a href="#" onclick="$('#newThread').toggle()">New Thread</a>]
+    <form id="newThread" action="." method="POST" style="display:none">
+        <input name="title" type="text" value="Title" onmouseover="addDefault($(this))"/>
+        <br />
+        <textarea name="body" rows="20" cols="100" onclick="this.innerHTML=''">Body</textarea>
+        <br/>
+        <input name="newThread" type="submit" value="Create Thread"/>
+        {% csrf_token %}
+    </form>
     <table>
         <tr class="colhead">
             <td class="latest">Latest</td>
@@ -14,6 +23,25 @@
                 <td>
                     <span class="topic">
                         <a href="/forums/{{ forum.title }}/{{ thread.title }}">{{ thread.title }}</a>
+                        {% if thread.pages > 1 %}
+                            (
+                            <a href="/forums/{{forum.title}}/{{thread.title}}/1">1</a>
+                            <a href="/forums/{{forum.title}}/{{thread.title}}/2">2</a>  
+                            {% if thread.pages == 3 %}
+                                <a href="/forums/{{forum.title}}/{{thread.title}}/3">3</a>
+                            {% elif thread.pages == 4 %}
+                                <a href="/forums/{{forum.title}}/{{thread.title}}/3">3</a>
+                                <a href="/forums/{{forum.title}}/{{thread.title}}/4">4</a>
+                            {% elif thread.pages > 4 %}
+                                -
+                                <a href="/forums/{{forum.title}}/{{thread.title}}/{{thread.pages|add:'-1'}}">{{thread.pages|add:"-1"}}</a>
+                                <a href="/forums/{{forum.title}}/{{thread.title}}/{{thread.pages}}">{{thread.pages}}</a>
+                            {% endif %}
+                            )                       
+                        {% endif %}
+                        {% if thread.lastRead != 0 %}
+                            <a href="/forums/post={{thread.lastRead}}">&#8635;</a>
+                        {% endif %}
                     </span>
                     <span class="lastPoster">by
                     <a href="/users/{{ thread.latest_poster.username }}">

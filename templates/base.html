@@ -3,7 +3,7 @@
 <head>
     <title>{% block title %}Djembe{% endblock %}</title>
     <link rel="stylesheet" href="/media/styles/main.css" />
-    <script src=" https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="/media/scripts/jquery-1.7.1.min.js"></script>
     <script>
         function addDefault(a) {
             a.data("default",a.val());
@@ -185,6 +185,7 @@
                             $("#centerSearch").fadeOut();
                         });
                     }
+                    return false;
 
                 }
                 if (e.keyCode == 27) {

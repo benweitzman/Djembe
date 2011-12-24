@@ -11,7 +11,7 @@ def mine(request):
 def view(request,username=""):
     if "username" in request.GET:
         return HttpResponseRedirect("/user/"+request.GET["username"])
-    showuser = User.objects.get(username=username)
+    showuser = User.objects.annotate(Count("posts")).get(username=username)
     return render_to_response("profile/view.html",context_instance=RequestContext(request,{"showuser":showuser}))
 
 def editProfile(request):

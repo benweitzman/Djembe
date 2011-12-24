@@ -44,10 +44,11 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
-PROJECT_ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+print PROJECT_ROOT_PATH
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = '/home/ben/Documents/Code/Djembe/media'
+MEDIA_ROOT = os.path.join(PROJECT_ROOT_PATH,"media")
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
@@ -105,7 +106,7 @@ ROOT_URLCONF = 'Djembe.urls'
 WSGI_APPLICATION = 'Djembe.wsgi.application'
 
 TEMPLATE_DIRS = (
-    "/home/ben/Documents/Code/Djembe/templates",
+    os.path.join(PROJECT_ROOT_PATH,"templates"),
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.

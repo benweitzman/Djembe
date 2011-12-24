@@ -18,12 +18,13 @@ class Album(models.Model):
     tags = models.ManyToManyField(Tag,blank=True, through='TagCount')
     photo = models.ManyToManyField(Photo,blank=True)
     releaseType = models.CharField(max_length=15,choices=RELEASE_TYPE,default="album")
+    albumInfo = models.TextField(blank=True,null=True)
     def __unicode__(self):
         return self.name
 
 class Artist(models.Model):
     name = models.CharField(max_length=100)
-    #albums = models.ManyToManyField('Album',blank=True,db_table="groups_album_artists")
+    artistInfo = models.TextField(blank=True,null=True)
     photo = models.ManyToManyField(Photo,blank=True)
 
     def __unicode__(self):

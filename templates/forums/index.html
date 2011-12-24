@@ -3,7 +3,8 @@
 
 {% block content %}
     <h3>Forums</h3>
-    {% for category,beep in forums.items %}
+    {% for category,cat_forums in forums.items %}
+        {% if cat_forums %}
         <div class="category">
             <div class="categoryHead">{{ category.title }}</div>
             <div class="forums">
@@ -14,7 +15,8 @@
                         <td>Topics</td>
                         <td>Posts</td>
                     </tr>
-                    {% for forum in beep.all %}
+                    {% for forum in cat_forums %}
+
                         <tr>
                             <td><a href="/forums/{{ forum.title }}">{{forum.title}}</a></td>
                             <td>
@@ -22,12 +24,33 @@
                                     <a href="/forums/{{ forum.title }}/{{ forum.get_latest.title }}">
                                         {{forum.get_latest.title|truncatechars:50 }}
                                     </a>
+                                    {% if forum.get_latest and forum.pages > 1 %}
+                                        (
+                                        <a href="/forums/{{forum.title}}/{{forum.get_latest.title}}/1">1</a>
+                                        <a href="/forums/{{forum.title}}/{{forum.get_latest.title}}/2">2</a>
+                                        {% if forum.pages == 3 %}
+                                            <a href="/forums/{{forum.title}}/{{forum.get_latest.title}}/3">3</a>
+                                        {% elif forum.pages == 4 %}
+                                            <a href="/forums/{{forum.title}}/{{forum.get_latest.title}}/3">3</a>
+                                            <a href="/forums/{{forum.title}}/{{forum.get_latest.title}}/4">4</a>
+                                        {% elif forum.pages > 4 %}
+                                            -
+                                            <a href="/forums/{{forum.title}}/{{forum.get_latest.title}}/{{forum.pages|add:'-1'}}">{{forum.pages|add:"-1"}}</a>
+                                            <a href="/forums/{{forum.title}}/{{forum.get_latest.title}}/{{forum.pages}}">{{forum.pages}}</a>
+                                        {% endif %}
+                                        )
+                                    {% endif %}
+                                    {% if forum.lastRead != 0 %}
+                                        <a href="/forums/post={{forum.lastRead}}">&#8635;</a>
+                                    {% endif %}
                                 </span>
+                                {% if forum.get_latest %}
                                 <span class="lastPoster">by
                                     <a href="/users/{{ forum.get_latest.latest_poster.username }}">
                                         {{ forum.get_latest.latest_poster.username }}</a>
                                     {{ forum.get_latest.latest_post.datePosted|timesince }} ago
                                 </span>
+                                {% endif %}
                             </td>
                             <td>{{forum.threads__count }}</td>
                             <td>{{ forum.threads__posts__count }}</td>
@@ -36,5 +59,6 @@
                 </table>
             </div>
         </div>
+        {% endif %}
     {% endfor %}
 {% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+        <h3>{{artist.name}}</h3>
+        {% for releaseType,typeAlbums in albums.items %}
+            {% if typeAlbums %}
+                <div class="releaseType">
+                    <h4>{{releaseType}}s</h4>
+                    {% for album in typeAlbums %}
+                        {{album.released.year}} - <a href="/albums/{{album.name}}">{{album.name}}</a>
+                        <br />
+                        {% for tag in album.tags.all %}
+                            {{tag}}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endfor %}
+{% endblock %}

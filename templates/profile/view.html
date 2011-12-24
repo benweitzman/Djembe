@@ -2,24 +2,38 @@
 {% load i18n %}
 
 {% block content %}
+    <h3>{{showuser.username}}</h3>
     <div id="userInfo">
-        <div id="userAvatar">
-            <h3>Avatar</h3>
-            <img src="{{ showuser.get_profile.avatar }}"/>
+        <div id="userAvatar" class="box">
+            <div class="head">Avatar</div>
+            <div class="pad">
+                <img src="{{ showuser.get_profile.avatar }}"/>
+            </div>
         </div>
-        <div id="userStats">
-            <h3>Stats</h3>
-            <ul>
-                <li>Joined: {{ showuser.date_joined|timesince }} ago</li>
-            </ul>
+        <div id="userStats" class="box">
+            <div class="head">Stats</div>
+            <div class="pad">
+                <ul>
+                    <li>Joined: {{ showuser.date_joined|timesince }} ago</li>
+                </ul>
+            </div>
         </div>
     </div>
     <div id="userProfile">
-        <h3>Profile</h3>
-        <div>
-            {% if showuser.get_profile.profile %}
-                {{ showuser.get_profile.profile }}
-            {% endif %}
+        <div class="box">
+            <div class="head">
+                Profile
+                <span class="right">
+                    <a href="#" onclick="$('#userProfile .pad div').toggle(); this.innerHTML=(this.innerHTML=='(Hide)'?'(Show)':'(Hide)'); return false;">(Hide)</a>
+                </span>
+            </div>
+            <div class="pad">
+                <div>
+                {% if showuser.get_profile.profile %}
+                    {{ showuser.get_profile.profile }}
+                {% endif %}
+                </div>
+            </div>
         </div>
     </div>
     <div class="clear"></div>
