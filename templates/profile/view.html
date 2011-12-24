@@ -4,17 +4,20 @@
 {% block content %}
     <h3>{{showuser.username}}</h3>
     <div id="userInfo">
+        {% if showuser.get_profile.avatar %}
         <div id="userAvatar" class="box">
             <div class="head">Avatar</div>
             <div class="pad">
                 <img src="{{ showuser.get_profile.avatar }}"/>
             </div>
         </div>
+        {% endif %}
         <div id="userStats" class="box">
             <div class="head">Stats</div>
             <div class="pad">
                 <ul>
                     <li>Joined: {{ showuser.date_joined|timesince }} ago</li>
+                    <li>Forum Posts: {{showuser.post__count}}</li>
                 </ul>
             </div>
         </div>
