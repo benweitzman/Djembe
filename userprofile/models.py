@@ -1,3 +1,4 @@
+import random
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -9,6 +10,7 @@ SEARCH_TYPES = (
     (1,"Artists"),
     (2,"Albums"),
     (3,"Users"),
+    (4,"Forums"),
 )
 
 PPP = (
@@ -32,8 +34,9 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User)
     avatar = models.CharField(max_length=400)
     profile = models.TextField(blank=True,null=True)
-    postsPerPage = models.IntegerField(default=25,)
-    megasearch = models.CharField(max_length=20)
+    postsPerPage = models.IntegerField(default=25,choices=PPP)
+    megasearch = models.CharField(max_length=200)
+    key = models.CharField(max_length=35,editable=False,default='')
 
     def searchtypes(self):
         strings = self.megasearch.split(",")
@@ -41,6 +44,11 @@ class UserProfile(models.Model):
         for i in strings[:-1]:
             nums.append(int(i))
         return nums
+
+    def save(self, *args, **kwargs):
+        if self.key == '':
+            self.key = ''.join(random.choice('0987654321poiuytrewqlkjhgfdsmnbvcxz') for i in range(35))
+        super(UserProfile,self).save(*args,**kwargs)
 
     def __unicode__(self):
         return self.user.username

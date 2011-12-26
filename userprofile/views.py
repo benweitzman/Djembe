@@ -12,7 +12,7 @@ def mine(request):
 
 def view(request,username=""):
     if "username" in request.GET:
-        return HttpResponseRedirect("/user/"+request.GET["username"])
+        return HttpResponseRedirect("/users/"+request.GET["username"])
     showuser = User.objects.annotate(Count("post")).get(username=username)
     return render_to_response("profile/view.html",context_instance=RequestContext(request,{"showuser":showuser}))
 
@@ -20,6 +20,7 @@ def editProfile(request):
     if request.POST:
         user = User.objects.get(id=request.user.id)
         f = ProfileForm(request.POST,instance=user.get_profile())
+        print f.data
         if f.is_valid():
             u = f.save(commit=False)
             csi = ""

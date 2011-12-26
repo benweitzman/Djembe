@@ -26,5 +26,5 @@ class LoginRequiredMiddleware:
         work, ensure your TEMPLATE_CONTEXT_PROCESSORS setting includes\
         'django.core.context_processors.auth'."
         if not request.user.is_authenticated():
-            if path != "" and "media" not in path:
+            if path != "" and "media" not in path and "tracker" not in path:
                 return HttpResponseRedirect('/')

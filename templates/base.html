@@ -149,9 +149,11 @@
             addDefault($("#hSearchArtist input"));
             addDefault($("#hSearchAlbum input"));
             addDefault($("#hSearchUser input"));
+            addDefault($("#hSearchForum input"));
             autocomplete($("#hSearchArtist input"),"artists");
             autocomplete($("#hSearchAlbum input"),"albums");
             autocomplete($("#hSearchUser input"),"users");
+            autocomplete($("#hSearchForum input"),"forums");
             autocomplete($("#centerSearch input"),"mega");
             $(document).keyup(function(e){
                 if (e.keyCode == 32) spacedown = spaceisdown = false;
@@ -252,6 +254,9 @@
             </form>
             <form name="users" class="search" id="hSearchUser" action="/user/" method="GET">
                 <input type="text" name="username" value="Users"/>
+            </form>
+            <form name="forums" class="search" id="hSearchForum" action="/forums/" method="GET">
+                <input type="text" name="forum" value="Forums" />
             </form>
         </div>
         <hr />

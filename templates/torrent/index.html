@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+        {% for torrent in torrents %}
+            <a href="/torrent/get/{{torrent.id}}">{{torrent.title}}</a><br/>
+        {% empty %}
+            no torrents
+        {% endfor %}
+{% endblock %}

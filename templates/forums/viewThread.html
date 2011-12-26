@@ -4,8 +4,8 @@
 
 {% macro paginator %}
     {% if posts.has_previous %}
-        <a href="/forums/{{thread.forum_set.get.title}}/{{thread.title}}/">&lt;&lt; First</a>
-        <a href="/forums/{{thread.forum_set.get.title}}/{{thread.title}}/{{posts.previous_page_number}}">&lt; Prev</a>
+        <a href="/forums/thread/{{thread.id}}/">&lt;&lt; First</a>
+        <a href="/forums/thread/{{thread.id}}/{{posts.previous_page_number}}">&lt; Prev</a>
         &nbsp;|&nbsp;
     {% endif %}
     {% if posts.has_other_pages %}
@@ -13,7 +13,7 @@
             {% if page.start_index == posts.start_index %}
                 {{page.start_index}}-{{page.end_index}}
             {% else %}
-                <a href="/forums/{{thread.forum_set.get.title}}/{{thread.title}}/{{index|add:startPage|add:1}}">
+                <a href="/forums/thread/{{thread.id}}/{{index|add:startPage|add:1}}">
                     {{page.start_index}}-{{page.end_index}}
                 </a>
             {% endif %}
@@ -24,8 +24,8 @@
     {% endif %}
     {% if posts.has_next %}
         &nbsp;|&nbsp;
-        <a href="/forums/{{thread.forum_set.get.title}}/{{thread.title}}/{{posts.next_page_number}}"> Next &gt;</a>
-        <a href="/forums/{{thread.forum_set.get.title}}/{{thread.title}}/{{pages|length}}"> Last &gt;&gt;</a>
+        <a href="/forums/thread/{{thread.id}}/{{posts.next_page_number}}"> Next &gt;</a>
+        <a href="/forums/thread/{{thread.id}}/{{pages|length}}"> Last &gt;&gt;</a>
     {% endif %}
 {% endmacro %}
 
@@ -34,7 +34,7 @@
         <a href="{% url forum.views.index %}">
             Forums</a>
         &gt;
-        <a href="{% url forum.views.index %}{{ thread.forum_set.get.title }}">
+        <a href="{% url forum.views.index %}forum/{{ thread.forum_set.get.id }}">
             {{ thread.forum_set.get.title }}</a>
         &gt; {{ thread.title }}
     </h3>
@@ -46,7 +46,7 @@
         <table class="post" id="post{{post.id}}">
             <tr>
                 <td colspan="2" class="head">
-                    <a href="/forums/{{thread.forum_set.get.title}}/{{thread.title}}/reply/{{post.id}}">#{{ post.id }}</a>
+                    <a href="/forums/post/{{post.id}}">#{{ post.id }}</a>
                     <a href="/users/{{ post.poster.username }}">
                         {{ post.poster.username }}
                     </a>

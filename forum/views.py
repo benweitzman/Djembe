@@ -38,10 +38,10 @@ def viewPost(request,post_id):
     page = post.index/request.user.get_profile().postsPerPage
     thread = post.thread_set.get()
     forum = thread.forum_set.get()
-    return HttpResponseRedirect("/forums/"+forum.title+"/"+thread.title+"/"+str(page+1)+"#post"+str(post_id))
+    return HttpResponseRedirect("/forums/thread/"+str(thread.id)+"/"+str(page+1)+"#post"+str(post_id))
 
-def viewForum(request,forum_name):
-    forum = Forum.objects.get(title=forum_name)
+def viewForum(request,forum_id):
+    forum = Forum.objects.get(id=forum_id)
     if "newThread" in request.POST:
         newThread = Thread.objects.create(title=request.POST['title'],op=request.user)
         newPost = Post.objects.create(poster=request.user,index=0)
@@ -72,8 +72,8 @@ def viewForum(request,forum_name):
     return render_to_response("forums/viewForum.html",context_instance=RequestContext(request,{"forum":forum,
                                                                                                "threads":threads}))
 
-def viewThread(request,forum_name,thread_name,page=1):
-    thread = Thread.objects.annotate(Count("posts")).get(title=thread_name)
+def viewThread(request,thread_id,page=1):
+    thread = Thread.objects.annotate(Count("posts")).get(id=thread_id)
     p = Paginator(thread.posts.all(),request.user.get_profile().postsPerPage)
     showpages = 9
     startpage = 0

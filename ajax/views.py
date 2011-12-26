@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.utils import simplejson
 from groups.models import *
+from forum.models import *
 from django.contrib.auth.models import User
 
 def index(request):
@@ -28,9 +29,13 @@ def index(request):
             if albumArtists:
                 response['albums'] = albumArtists
         if kind == "users" or 3 in searchtypes:
-            a = User.objects.values('username').filter(username__startswith=letters)
+            a = User.objects.extra(select={"name":"username"}).values('name').filter(username__startswith=letters)
             if a:
                 response['users'] = list(a)
+        if kind == "forums" or 4 in searchtypes:
+            a = Thread.objects.extra(select={"name":"title"}).values('name').filter(title__startswith=letters)
+            if a:
+                response['forums'] = list(a)
         if len(response) != 0:
             message = simplejson.dumps(response)
     return HttpResponse(message)

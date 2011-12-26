@@ -234,3 +234,7 @@ table .lastPoster {
 .right {
     float:right;
 }
+
+tr.colhead .topics, tr.colhead .posts, tr.colhead .author, tr.colhead .replies {
+    width:7%;
+}

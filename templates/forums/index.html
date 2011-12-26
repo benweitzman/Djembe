@@ -12,36 +12,36 @@
                     <tr class="colhead">
                         <td>Forum</td>
                         <td class="latest">Last Post</td>
-                        <td>Topics</td>
-                        <td>Posts</td>
+                        <td class="topics">Topics</td>
+                        <td class="posts">Posts</td>
                     </tr>
                     {% for forum in cat_forums %}
 
                         <tr>
-                            <td><a href="/forums/{{ forum.title }}">{{forum.title}}</a></td>
+                            <td><a href="/forums/forum/{{ forum.id }}">{{forum.title}}</a></td>
                             <td>
                                 <span class="topic">
-                                    <a href="/forums/{{ forum.title }}/{{ forum.get_latest.title }}">
+                                    <a href="/forums/thread/{{ forum.get_latest.id }}">
                                         {{forum.get_latest.title|truncatechars:50 }}
                                     </a>
                                     {% if forum.get_latest and forum.pages > 1 %}
                                         (
-                                        <a href="/forums/{{forum.title}}/{{forum.get_latest.title}}/1">1</a>
-                                        <a href="/forums/{{forum.title}}/{{forum.get_latest.title}}/2">2</a>
+                                        <a href="/forums/thread/{{forum.get_latest.id}}/1">1</a>
+                                        <a href="/forums/thread/{{forum.get_latest.id}}/2">2</a>
                                         {% if forum.pages == 3 %}
-                                            <a href="/forums/{{forum.title}}/{{forum.get_latest.title}}/3">3</a>
+                                            <a href="/forums/thread/{{forum.get_latest.id}}/3">3</a>
                                         {% elif forum.pages == 4 %}
-                                            <a href="/forums/{{forum.title}}/{{forum.get_latest.title}}/3">3</a>
-                                            <a href="/forums/{{forum.title}}/{{forum.get_latest.title}}/4">4</a>
+                                            <a href="/forums/thread/{{forum.get_latest.id}}/3">3</a>
+                                            <a href="/forums/thread/{{forum.get_latest.id}}/4">4</a>
                                         {% elif forum.pages > 4 %}
                                             -
-                                            <a href="/forums/{{forum.title}}/{{forum.get_latest.title}}/{{forum.pages|add:'-1'}}">{{forum.pages|add:"-1"}}</a>
-                                            <a href="/forums/{{forum.title}}/{{forum.get_latest.title}}/{{forum.pages}}">{{forum.pages}}</a>
+                                            <a href="/forums/thread/{{forum.get_latest.id}}/{{forum.pages|add:'-1'}}">{{forum.pages|add:"-1"}}</a>
+                                            <a href="/forums/thread/{{forum.get_latest.id}}/{{forum.pages}}">{{forum.pages}}</a>
                                         {% endif %}
                                         )
                                     {% endif %}
                                     {% if forum.lastRead != 0 %}
-                                        <a href="/forums/post={{forum.lastRead}}">&#8635;</a>
+                                        <a href="/forums/post/{{forum.lastRead}}">&#8635;</a>
                                     {% endif %}
                                 </span>
                                 {% if forum.get_latest %}
