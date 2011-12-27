@@ -21,6 +21,16 @@
                 </ul>
             </div>
         </div>
+        {% if showuser == user %}
+        <div id="userPersonal" class="box">
+            <div class="head">Personal</div>
+            <div class="pad">
+                <ul>
+                    <li>Key: {{user.get_profile.key}}</li>
+                </ul>
+            </div>
+        </div>
+        {% endif %}
     </div>
     <div id="userProfile">
         <div class="box">

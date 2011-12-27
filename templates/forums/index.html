@@ -2,7 +2,9 @@
 {% load i18n %}
 
 {% block content %}
-    <h3>Forums</h3>
+    <ul class="breadcrumb">
+        <li class="active">Forums</li>
+    </ul>
     {% for category,cat_forums in forums.items %}
         {% if cat_forums %}
         <div class="category">

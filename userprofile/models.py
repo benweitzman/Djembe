@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.forms import ModelForm
 from django import forms
+from django.utils.safestring import mark_safe
 from forum.models import *
 
 SEARCH_TYPES = (
@@ -30,12 +31,18 @@ class ThreadView(models.Model):
     def __unicode__(self):
         return self.user.username+u':'+self.thread.title+u':'+str(self.post.id)
 
+class MyCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
+    def render(self, name, value, attrs=None, choices=()):
+        html = super(MyCheckboxSelectMultiple, self).render(name, value, attrs, choices)
+
+        return mark_safe(html.replace('<ul>', '<ul class="inputs-list">'))
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
-    avatar = models.CharField(max_length=400)
+    avatar = models.CharField(max_length=400,blank=True)
     profile = models.TextField(blank=True,null=True)
-    postsPerPage = models.IntegerField(default=25,choices=PPP)
-    megasearch = models.CharField(max_length=200)
+    postsPerPage = models.IntegerField(default=25,choices=PPP,verbose_name="Posts Per Page")
+    megasearch = models.CharField(max_length=200,blank=True)
     key = models.CharField(max_length=35,editable=False,default='')
 
     def searchtypes(self):
@@ -59,8 +66,10 @@ class ProfileForm(ModelForm):
         exclude = ("user")
     def __init__(self, *args, **kwargs):
         super(ProfileForm, self).__init__(*args, **kwargs)
+        self.fields['avatar'].widget.attrs = {"class":"xxlarge"}
+        self.fields['profile'].widget.attrs = {"class":"xxlarge","style":"height:100px !important"}
         self.fields['megasearch'] = forms.MultipleChoiceField(choices=SEARCH_TYPES)
-        self.fields['megasearch'].widget = forms.CheckboxSelectMultiple(choices=SEARCH_TYPES)
+        self.fields['megasearch'].widget = MyCheckboxSelectMultiple(choices=SEARCH_TYPES)
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:

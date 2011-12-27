@@ -36,7 +36,7 @@ def announce(request,key):
         # tracking fields
         uploaded = request.GET['uploaded']
         downloaded = request.GET['downloaded']
-        left = request.GET['left']
+        left = int(request.GET['left'])
         compact = request.GET.get('compact', 0)
         # keying for keeping the trash out. DIE UNWASHED MASSES, DIE.
         if key:
@@ -49,12 +49,17 @@ def announce(request,key):
 
         if 'started' in event:
             peer, created = Peer.objects.get_or_create(peer_id=peer_id,torrent=torrent,ip=ip,port=port)
+            print created
             if created:
                 #if key and 'profile' in locals():
                 peer.user = profile.user
                 peer.ip = ip
                 peer.port = port
                 peer.save()
+                if torrent.downloaded == 0 and left == 0:
+                    torrent.downloaded += 1
+                    torrent.save()
+
         elif 'stopped' in event:
             try:
                 peer = Peer.objects.get(peer_id=peer_id, torrent=torrent)

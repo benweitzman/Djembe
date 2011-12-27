@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.forms.util import ErrorList
 from userprofile.models import *
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
@@ -20,7 +21,6 @@ def editProfile(request):
     if request.POST:
         user = User.objects.get(id=request.user.id)
         f = ProfileForm(request.POST,instance=user.get_profile())
-        print f.data
         if f.is_valid():
             u = f.save(commit=False)
             csi = ""
@@ -29,6 +29,9 @@ def editProfile(request):
             u.megasearch = csi
             u.save()
             return HttpResponseRedirect("/profile/mine")
+        else:
+            print f
+            return render_to_response("profile/edit.html",context_instance=RequestContext(request,{"form":f}))
     user = User.objects.get(id=request.user.id)
     form = ProfileForm(instance=user.get_profile())
     c = RequestContext(request,{"form":form})

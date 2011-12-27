@@ -30,7 +30,6 @@ def index(request):
                 i.pages = 0
                 i.lastRead = 0
         forums[category[1]] = catForums
-    print forums['Site'][0].pages
     return render_to_response("forums/index.html",context_instance=RequestContext(request,{"forums":forums}))
 
 def viewPost(request,post_id):

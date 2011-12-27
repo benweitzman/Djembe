@@ -12,7 +12,7 @@ class Torrent(models.Model):
     #image = models.ImageField(_('Image'), upload_to='img/torrents', blank=True, null=True)
     description = models.TextField()
     added = models.DateTimeField(auto_now_add=True, editable=False)
-    torrent = models.FileField(upload_to='torrent/')
+    torrent = models.FileField(upload_to='torrent/',max_length=200)
     data = JSONField(editable=False, default=lambda: {})
     info_hash = models.CharField(unique=True, max_length=40, db_index=True, editable=False)
     seeders = models.PositiveIntegerField(editable=False, default=0)

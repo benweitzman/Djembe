@@ -1,5 +1,6 @@
 from groups.models import *
 from django.contrib import admin
+admin.site.register(AlbumFormat)
 admin.site.register(Artist)
 admin.site.register(Album)
 admin.site.register(Release)

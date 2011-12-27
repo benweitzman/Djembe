@@ -8,9 +8,31 @@
         {% if not forloop.last %} & {% endif %}
     {% endfor %} -
     {{ album }}
-    [{{album.released.year}}]
+    [{{album.released}}]
     [{{album.releaseType|capfirst}}]
 </h3>
+    <div>
+        <ul>
+        {% for release in album.releases.all %}
+            <li>
+                {{release.format}}
+
+                <ul>
+                    {% for format in release.albumformat_set.all %}
+                        <li>
+                            {{format.format}}/{{format.bitrate}}
+                            <a href="/torrent/get/{{format.torrent.id}}?fileName={{format.fileName}}">dl</a>
+                        </li>
+                    {% empty %}
+                        <li>No Formats</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% empty %}
+            <li>No Releases</li>
+        {% endfor %}
+        </ul>
+    </div>
 {% if album.tagcount_set.all %}
     <h5>tags</h5>
     <ul>

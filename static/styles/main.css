@@ -1,0 +1,261 @@
+html {
+    overflow: auto !important;
+    background: #eee;
+}
+body {
+    background: #eee;
+    margin: 0;
+    padding: 0;
+    padding-top:60px !important;
+    width:100%;
+    height:100%;
+    font: 9pt/14pt 'Lucida Grande',Helvetica,Arial,sans-serif
+}
+
+a {
+    text-decoration: none;
+    color: #3b7ab0;
+}
+
+a img {
+    border: none;
+}
+
+a:hover {
+    color: #448cc8;
+}
+
+
+#header .search {
+    display:inline-block;
+}
+
+#page>* {
+    width:900px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#centerSearch {
+    position: fixed;
+    width:100%;
+    height:100%;
+    top:0;
+    left:0;
+    background: rgba(0,0,0,.5);
+    display:none;
+}
+
+#center {
+    color:white;
+    display:inline-block;
+    text-align: center;
+    position:absolute;
+    top:-1000px;
+    bottom:0;
+    left:0;
+    right:0;
+    margin:auto;
+    height:240px;
+    width:70%;
+}
+
+#autocomplete {
+    position:absolute;
+    z-index: 1000000000;
+    display:none;
+    border: 1px solid #111;
+}
+
+#autocomplete div {
+    background: #fff;
+}
+#autocomplete div:not(:last-child) {
+    border-bottom: 1px solid #111;
+}
+
+#autocomplete div.centerSeparator {
+    text-align: center;
+    text-transform: capitalize;
+    background: #777;
+}
+
+#autocomplete div.autoselect:not(.centerSeparator) {
+    background: #ccc;
+}
+
+#center input {
+    padding-left: 30px;
+    border-radius: 10px;
+    height:60px;
+    width:80%;
+    outline:none;
+}
+
+#userInfo {
+    float:right;
+    width:30%;
+}
+
+
+#userProfile {
+    float:left;
+    width:68%;
+}
+
+.clear {
+    clear:both;
+}
+
+table {
+    width:100%;
+    border-collapse: collapse;
+    border-spacing:0;
+}
+
+table tr.colhead td, #posts .post .head, .box .head {
+    background: -webkit-gradient(linear,left top,left bottom,from(#ddd),to(#ccc));
+	background: -moz-linear-gradient(center bottom,#ccc,#ddd);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+    -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+    font: bold 10pt Helvetica,Arial,sans-serif !important;
+	color: #575757 !important;
+    padding:8px;
+	text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+}
+
+table tr.colhead td.latest {
+    width:70%;
+}
+
+table tr:not(.colhead) td {
+    background: #fff;
+}
+
+table .topic {
+    float:left;
+}
+
+table td {
+    border: 1px solid #aeaeae !important;
+    padding: 5px;
+    margin: 0px;
+}
+
+table td:not(:first-child) {
+    text-align: center;
+}
+
+table .lastPoster {
+    float:right;
+}
+
+.post .avatar {
+    width:150px;
+    background:#f6f6f6;
+    border-right: 1px solid #ddd;
+    padding:10px;
+}
+.post .avatar img {
+    width:150px;
+
+}
+
+.post td {
+    vertical-align: top;
+    text-align: left;
+}
+
+.post .text div {
+    text-align: left;
+}
+
+.post div:not(.body):not(.clear) {
+}
+.post{
+    margin: 10px;
+    margin-left: 0;
+    margin-right: 0;
+    /*outline: 1px solid #aeaeae;*/
+    -webkit-box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+	-moz-box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+}
+
+.post .body {
+    background: #fff;
+}
+
+#forumActions {
+    text-align: center;
+}
+
+#newPost {
+    width:100%;
+    text-align: center;
+}
+
+#newPost h3{
+    width:100%;
+    text-align: left;
+}
+
+#newPost textarea {
+    width:80%;
+    height:200px;
+    padding: 8px;
+	background: #fff;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border: 1px solid #adadad;
+	font: 12pt 'Lucida Grande',Helvetica,Arial,sans-serif;
+	color: #444;
+	-webkit-box-shadow: inset -1px 1px 3px rgba(0,0,0,0.15);
+	-moz-box-shadow: inset -1px 1px 3px rgba(0,0,0,0.15);
+	-webkit-background-clip: padding-box;
+}
+
+.paginator {
+    text-align: center;
+}
+
+.box .head {
+    border-bottom: 1px solid #bbb;
+}
+.pad {
+    padding:8px;
+}
+.box {
+    border: 1px solid #AEAEAE;
+    background: white;
+    margin-bottom: 10px;
+}
+
+#userAvatar .pad {
+    text-align: center;
+}
+
+#userAvatar img {
+    width:150px;
+}
+
+.right {
+    float:right;
+}
+
+tr.colhead .topics, tr.colhead .posts, tr.colhead .author, tr.colhead .replies {
+    width:7%;
+}
+
+.footer {
+    background-color: #eee;
+    min-width: 940px;
+    padding: 30px 0;
+    text-shadow: 0 1px 0 #fff;
+    border-top: 1px solid #e5e5e5;
+    -webkit-box-shadow: inset 0 5px 15px rgba(0,0,0,.025);
+    -moz-box-shadow: inset 0 5px 15px rgba(0,0,0,.025);
+    /*          box-shadow: inset 0 5px 15px rgba(0,0,0,.025);
+    */}
+.footer p {
+    color: #555;
+}

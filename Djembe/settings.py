@@ -1,5 +1,7 @@
 # Django settings for Djembe project.
 import os
+from ConfigParser import RawConfigParser
+
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -45,7 +47,15 @@ USE_I18N = True
 USE_L10N = True
 
 PROJECT_ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-print PROJECT_ROOT_PATH
+
+config = RawConfigParser()
+config.read(os.path.join(PROJECT_ROOT_PATH,'config.ini'))
+
+EMAIL_HOST = config.get('email','EMAIL_HOST')#'smtp.gmail.com'
+EMAIL_HOST_USER = config.get('email','EMAIL_HOST_USER') #'benweitzman@gmail.com'
+EMAIL_HOST_PASSWORD = config.get('email','EMAIL_HOST_PASSWORD')#'alvaro99'
+EMAIL_PORT = config.get('email','EMAIL_PORT')#587
+EMAIL_USE_TLS = config.get('email','EMAIL_USE_TLS')#True
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT_PATH,"media")
@@ -58,11 +68,11 @@ MEDIA_URL = 'http://localhost:8000/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = os.path.join(PROJECT_ROOT_PATH,"static")
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
-STATIC_URL = '/static/'
+STATIC_URL = 'http://localhost:8000/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -100,6 +110,16 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+LOGIN_URL = '/$'
+
+LOGIN_EXEMPT_URLS = (
+    r'^accounts/invited',
+    r'^accounts/register',
+    r'^accounts/activate',
+    r'^accounts/password',
+    r'^static/',
+    )
+
 ROOT_URLCONF = 'Djembe.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
@@ -128,6 +148,7 @@ INSTALLED_APPS = (
     'photo',
     'ajax',
     'registration',
+    'invitation',
     'userprofile',
     'forum',
     'torrent',
@@ -138,6 +159,11 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
      'django.contrib.admindocs',
 )
+
+ACCOUNT_ACTIVATION_DAYS = 7
+ACCOUNT_INVITATION_DAYS = 7
+INVITATIONS_PER_USER = 5
+INVITE_MODE = True
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"

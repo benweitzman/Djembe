@@ -18,15 +18,25 @@ def get(request, id):
     info = bencode.bdecode(data)
     info['announce'] = str("http://localhost:8000/"+request.user.get_profile().key+"/announce")
     #print info['announce']
-
+    fileName = "file.torrent"
+    if "fileName" in request.GET:
+        fileName = request.GET['fileName']
     newTorrent = bencode.bencode(info)
     response = HttpResponse(newTorrent)
-    response['Content-Disposition'] = 'attachment; filename=file.torrent'
+    response['Content-Disposition'] = 'attachment; filename='+fileName
     return response
+
+class DivErrorList(ErrorList):
+    def __unicode__(self):
+        return self.as_divs()
+    def as_divs(self):
+        if not self: return u''
+        return u'<div class="errorlist">%s</div>' % ''.join([u'<div class="alert-message error"><a class="close" href="#">x</a><p><strong>Oh Snap!</strong> %s</p></div>' % e for e in self])
 
 def upload(request):
     if "upload" in request.POST:
-        f = TorrentUploadForm(request.POST,request.FILES)
+
+        f = TorrentUploadForm(request.POST,request.FILES,error_class=DivErrorList)
         if f.is_valid():
             u = f.save()
             u.user = request.user

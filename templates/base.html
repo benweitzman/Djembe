@@ -2,8 +2,11 @@
 <html>
 <head>
     <title>{% block title %}Djembe{% endblock %}</title>
-    <link rel="stylesheet" href="/media/styles/main.css" />
-    <script src="/media/scripts/jquery-1.7.1.min.js"></script>
+    <link rel="stylesheet" href="/static/styles/main.css" />
+    <link rel="stylesheet" href="/static/styles/bootstrap.min.css">
+    <script src="/static/scripts/jquery-1.7.1.min.js"></script>
+    <script src="/static/scripts/bootstrap-dropdown.js"></script>
+    <script src="/static/scripts/bootstrap-modal.js"></script>
     <script>
         function addDefault(a) {
             a.data("default",a.val());
@@ -146,6 +149,11 @@
         }
         ctrldown = spacedown = spaceisdown = false;
         $(document).ready(function () {
+            for (i=0;i<$("#topNav li a").length;i++) {
+              if ($("#topNav li a")[i].pathname == window.location.pathname) {
+                  $($("#topNav li")[i]).addClass("active")
+              }
+            }
             addDefault($("#hSearchArtist input"));
             addDefault($("#hSearchAlbum input"));
             addDefault($("#hSearchUser input"));
@@ -226,53 +234,62 @@
         </form>
     </div>
 </div>
-<div id="page">
-<div id="header">
-    {% block header %}
-        <div id="user">
-            {% if user.is_authenticated %}
-                <ul>
-                <li><a href="/profile/mine">{{ user.username }}</a></li>
-                <li><a href="/profile/edit">Edit</a></li>
-                <li><a href="{% url django.contrib.auth.views.logout %}">Logout</a></li>
+{% block header %}
+<div class="topbar">
+    <div class="fill">
+        <div class="container">
+            <a class="brand" href="/">Djembe</a>
+            <ul class="nav" id="topNav">
+                <li><a href="/">Home</a></li>
+                <li><a href="/artists/">Artists</a></li>
+                <li><a href="/forums/">Forum</a></li>
             </ul>
-            {% else %}
-                Not logged in
-            {% endif %}
+            <!--<ul class="nav">
+                <li><form name="albums" class="search" id="hSearchAlbum">
+                    <input type="text" name="album" value="Albums" class="span2"/>
+                </form></li>
+                <li><form name="artists" class="search" id="hSearchArtist" action="/artists/" method="GET">
+                    <input type="text" name="artist" value="Artists" class="span2"/>
+                </form></li>
+                <li><form name="users" class="search" id="hSearchUser" action="/user/" method="GET">
+                    <input type="text" name="username" value="Users" class="span2"/>
+                </form></li>
+                <li><form name="forums" class="search" id="hSearchForum" action="/forums/" method="GET">
+                    <input type="text" name="forum" value="Forums" class="span2" />
+                </form></li>
+            </ul>-->
+            <ul class="nav secondary-nav">
+                <li class="dropdown" data-dropdown="dropdown">
+                    <a href="#" class="dropdown-toggle">{{user.username}}</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/profile/mine">View Profile</a></li>
+                        <li><a href="/profile/edit">Edit</a></li>
+                        <li><a href="{% url django.contrib.auth.views.logout %}">Logout</a></li>
+                        {% if user.is_staff %}
+                        <li class="divider"></li>
+                        <li><a href="/admin/">Admin</a></li>
+                        {%endif %}
+                    </ul>
+                </li>
+            </ul>
         </div>
-        <div id="menu">
-            <a href="{% url Djembe.views.index %}">Home</a>
-            <a href="{% url groups.views.artistsIndex %}">Artists</a>
-            <a href="{% url forum.views.index %}">Forum</a>
-        </div>
-        <div id="searchbar">
-            <form name="albums" class="search" id="hSearchAlbum">
-                <input type="text" value="Albums"/>
-            </form>
-            <form name="artists" class="search" id="hSearchArtist" action="/artists/" method="GET">
-                <input type="text" name="artist" value="Artists"/>
-            </form>
-            <form name="users" class="search" id="hSearchUser" action="/user/" method="GET">
-                <input type="text" name="username" value="Users"/>
-            </form>
-            <form name="forums" class="search" id="hSearchForum" action="/forums/" method="GET">
-                <input type="text" name="forum" value="Forums" />
-            </form>
-        </div>
-        <hr />
-    {% endblock %}
+    </div>
 </div>
+{% endblock %}
+<div class="container">
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
 
-<div id="content">
-    {% block content %}{% endblock %}
-</div>
 
-<div id="footer">
-    {% block footer %}
-        <hr />
-    {% endblock %}
 </div>
-</div>
+<footer class="footer">
+    <div class="container">
+        {% block footer %}
+        Made by Djembe, for you
+        {% endblock %}
+    </div>
+</footer>
 </body>
 
 </html>

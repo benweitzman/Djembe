@@ -4,6 +4,6 @@
        <form action="" method="POST" enctype="multipart/form-data">
            {% csrf_token %}
            {{form.as_p}}
-           <input type="submit" name="upload"/>
+           <input type="submit" class="btn primary" name="upload"/>
        </form>
 {% endblock %}

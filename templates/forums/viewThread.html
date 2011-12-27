@@ -3,41 +3,43 @@
 {% load macros %}
 
 {% macro paginator %}
-    {% if posts.has_previous %}
-        <a href="/forums/thread/{{thread.id}}/">&lt;&lt; First</a>
-        <a href="/forums/thread/{{thread.id}}/{{posts.previous_page_number}}">&lt; Prev</a>
-        &nbsp;|&nbsp;
-    {% endif %}
-    {% if posts.has_other_pages %}
-        {% for index, page in showPages.items %}
-            {% if page.start_index == posts.start_index %}
-                {{page.start_index}}-{{page.end_index}}
-            {% else %}
-                <a href="/forums/thread/{{thread.id}}/{{index|add:startPage|add:1}}">
-                    {{page.start_index}}-{{page.end_index}}
-                </a>
-            {% endif %}
-            {% if not forloop.last %}
-                &nbsp;|&nbsp;
-            {% endif %}
-        {% endfor %}
-    {% endif %}
-    {% if posts.has_next %}
-        &nbsp;|&nbsp;
-        <a href="/forums/thread/{{thread.id}}/{{posts.next_page_number}}"> Next &gt;</a>
-        <a href="/forums/thread/{{thread.id}}/{{pages|length}}"> Last &gt;&gt;</a>
+     {% if posts.has_other_pages %}
+    <div class="pagination">
+        <ul style="display:inline-block;float:none">
+        {% if posts.has_previous %}
+            <li class="first"><a href="/forums/thread/{{thread.id}}/">&lt;&lt; First</a></li>
+            <li><a href="/forums/thread/{{thread.id}}/{{posts.previous_page_number}}">&lt; Prev</a></li>
+        {% endif %}
+        {% if posts.has_other_pages %}
+            {% for index, page in showPages.items %}
+                {% if page.start_index == posts.start_index %}
+                   <li class="active"><a>{{page.start_index}}-{{page.end_index}}</a></li>
+                {% else %}
+                    <li><a href="/forums/thread/{{thread.id}}/{{index|add:startPage|add:1}}">
+                        {{page.start_index}}-{{page.end_index}}
+                    </a></li>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% if posts.has_next %}
+            <li><a href="/forums/thread/{{thread.id}}/{{posts.next_page_number}}"> Next &gt;</a></li>
+            <li class="next"><a href="/forums/thread/{{thread.id}}/{{pages|length}}"> Last &gt;&gt;</a></li>
+        {% endif %}
+        </ul>
+    </div>
     {% endif %}
 {% endmacro %}
 
 {% block content %}
-    <h3>
-        <a href="{% url forum.views.index %}">
-            Forums</a>
-        &gt;
-        <a href="{% url forum.views.index %}forum/{{ thread.forum_set.get.id }}">
+    <ul class="breadcrumb">
+        <li><a href="{% url forum.views.index %}">Forums</a><span class="divider">/</span></li>
+        <li>
+            <a href="{% url forum.views.index %}forum/{{ thread.forum_set.get.id }}">
             {{ thread.forum_set.get.title }}</a>
-        &gt; {{ thread.title }}
-    </h3>
+            <span class="divider">/</span>
+        </li>
+        <li class="active">{{ thread.title }}</li>
+    </ul>
     <div class="paginator">
         {% usemacro paginator %}
     </div>
@@ -81,6 +83,17 @@
     <div class="paginator">
         {% usemacro paginator %}
     </div>
+    {% comment %}
+    <ul class="breadcrumb">
+        <li><a href="{% url forum.views.index %}">Forums</a><span class="divider">/</span></li>
+        <li>
+            <a href="{% url forum.views.index %}forum/{{ thread.forum_set.get.id }}">
+                {{ thread.forum_set.get.title }}</a>
+            <span class="divider">/</span>
+        </li>
+        <li class="active">{{ thread.title }}</li>
+    </ul>
+    {% endcomment %}
     <div id="newPost">
         <h3>Post Reply</h3>
         <form action="." method="POST">
@@ -90,4 +103,5 @@
             <input type="submit"/>
         </form>
     </div>
+
 {% endblock %}

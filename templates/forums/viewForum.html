@@ -2,14 +2,23 @@
 {% load i18n %}
 
 {% block content %}
-  <h3><a href="{% url forum.views.index %}">Forums</a> &gt; {{ forum.title }}</h3>
-    [<a href="#" onclick="$('#newThread').toggle()">New Thread</a>]
-    <form id="newThread" action="." method="POST" style="display:none">
-        <input name="title" type="text" value="Title" onmouseover="addDefault($(this))"/>
+    <ul class="breadcrumb">
+        <li><a href="{% url forum.views.index %}">Forums</a><span class="divider">/</span></li>
+        <li class="active">{{ forum.title }}</li>
+    </ul>
+    <div id="forumActions">
+        [<a href="#" onclick="$('#newThread').slideToggle()">New Thread</a>]
+    </div>
+    <form id="newThread" action="." method="POST" style="display:none" class="form-stacked">
+        <label for="threadTitle">Title</label>
+        <input class="span10" id="threadTitle" name="title" type="text" value="Title" onmouseover="addDefault($(this))"/>
         <br />
-        <textarea name="body" rows="20" cols="100" onclick="this.innerHTML=''">Body</textarea>
+        <label for="threadBody">Body</label>
+        <textarea class="span12" id="threadBody" name="body" rows="10" cols="100" onclick="this.innerHTML=''">Body</textarea>
         <br/>
-        <input name="newThread" type="submit" value="Create Thread"/>
+        <div class="actions">
+        <input name="newThread" type="submit" value="Create Thread" class="btn"/>
+        </div>
         {% csrf_token %}
     </form>
     <table>
