@@ -51,11 +51,11 @@ PROJECT_ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 config = RawConfigParser()
 config.read(os.path.join(PROJECT_ROOT_PATH,'config.ini'))
 
-EMAIL_HOST = config.get('email','EMAIL_HOST')#'smtp.gmail.com'
-EMAIL_HOST_USER = config.get('email','EMAIL_HOST_USER') #'benweitzman@gmail.com'
-EMAIL_HOST_PASSWORD = config.get('email','EMAIL_HOST_PASSWORD')#'alvaro99'
-EMAIL_PORT = config.get('email','EMAIL_PORT')#587
-EMAIL_USE_TLS = config.get('email','EMAIL_USE_TLS')#True
+EMAIL_HOST = config.get('email','EMAIL_HOST')
+EMAIL_HOST_USER = config.get('email','EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config.get('email','EMAIL_HOST_PASSWORD')
+EMAIL_PORT = config.get('email','EMAIL_PORT')
+EMAIL_USE_TLS = config.get('email','EMAIL_USE_TLS')
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT_PATH,"media")
@@ -118,6 +118,7 @@ LOGIN_EXEMPT_URLS = (
     r'^accounts/activate',
     r'^accounts/password',
     r'^static/',
+    r'^tracker/',
     )
 
 ROOT_URLCONF = 'Djembe.urls'
@@ -134,6 +135,10 @@ TEMPLATE_DIRS = (
 
 AUTH_PROFILE_MODULE="userprofile.UserProfile"
 
+PLUGINS = (
+
+)
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -143,7 +148,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'annoying',
-    'groups',
+    'plugins.music',
     'tags',
     'photo',
     'ajax',
@@ -153,6 +158,7 @@ INSTALLED_APPS = (
     'forum',
     'torrent',
     'tracker',
+    'ajax_select',
     #'djangobb_forum',
     #'haystack',
     #'messages',
@@ -168,11 +174,29 @@ INVITE_MODE = True
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
+AJAX_LOOKUP_CHANNELS = {
+    #   pass a dict with the model and the field to search against
+    'label'  : {'model':'plugins.music.models.Label', 'search_field':'name'}
+}
+# magically include jqueryUI/js/css
+AJAX_SELECT_BOOTSTRAP = True
+AJAX_SELECT_INLINES = 'inline'
+
 MAX_SHOW_ALL_ALLOWED = 200
 
-HAYSTACK_SITECONF = 'search_sites'
+HAYSTACK_SITECONF = 'Djembe.search_sites'
 HAYSTACK_SEARCH_ENGINE = 'whoosh'
-HAYSTACK_WHOOSH_PATH = os.path.join(PROJECT_ROOT_PATH, 'djangobb_index')
+HAYSTACK_WHOOSH_PATH = os.path.join(PROJECT_ROOT_PATH, 'index')
+"""HAYSTACK_CONNECTIONS = {
+    'default': {
+        'PATH':os.path.join(PROJECT_ROOT_PATH,'index'),
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'STORAGE': 'file',
+        'POST_LIMIT': 128 * 1024 * 1024,
+        'INCLUDE_SPELLING': True,
+        'BATCH_SIZE': 100
+    }
+}"""
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

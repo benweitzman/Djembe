@@ -2,11 +2,22 @@
 {% load i18n %}
 
 {% block content %}
-{{ remaining_invitations }}
-<form method="post" action=".">
+        <div class="row">
+<form method="post" action="." class="span7 offset4">
+    {% if notEnough %}
+    <div class="alert-message error">
+        <strong>Aw snap!</strong> Not enough invitations!
+    </div>
+    {% endif %}
+    <div class="center">
+        You have {{ remaining_invitations }} invites available
+    </div>
+    <br/>
     {% csrf_token %}
     {{ form.as_p }}
-
-    <input type="submit" value="{% trans 'Submit' %}" />
+    <div class="actions">
+        <input type="submit" value="{% trans 'Submit' %}" class="btn primary" />
+    </div>
 </form>
+        </div>
 {% endblock %}

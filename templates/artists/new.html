@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load add_class %}
+{% block content %}
+        <div class="row">
+        <form action="" method="POST" class="form-stacked span10 offset2" id="newartistform">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="clearfix">
+                    {{field.errors}}
+                    {{field.label_tag}}
+                    <div class="input">
+                        {{field|add_class:'span8'}}
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="actions">
+                <input id="submitArtist" type="submit" class="btn primary" name='newartist'"/>
+                <input id="submitArtistAndAddAlbum" type="submit" class="btn" name="newartistandalbum" value="Submit and add album" />
+            </div>
+        </form>
+        </div>
+        <div id="modal-warning" class="modal hide fade in" style="display: none; ">
+            <div class="modal-header">
+                <a href="#" class="close">×</a>
+                <h3>Warnings</h3>
+            </div>
+            <div class="modal-body">
+                <p>Do you want to submit anyways?</p>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn primary" onclick="$('#modal-warning').modal('hide')">No</a>
+                <span class="btn secondary" onclick="$('#newartistform').unbind('submit');$('#newartistform #submitArtist').click()">Yes</span>
+            </div>
+        </div>
+        <script>
+            $("form").submit(function (e) {
+               console.log("submitting")
+               if ($(e.target).children(".warning").length>0 && $("#modal-warning").css("display") == "none") {
+                    $("#modal-warning").modal({
+                        backdrop:true,
+                        show:true
+                    })
+                    return false;
+               } else {
+                   return true;
+               }
+
+            });
+           checkUnique($("#id_name"),"artists")
+        </script>
+{% endblock %}

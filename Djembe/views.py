@@ -10,5 +10,8 @@ def index(request):
     else:
         return login(request)
 
+def about(request):
+    return render_to_response('about.html',context_instance=RequestContext(request))
+
 
         

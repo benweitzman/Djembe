@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load i18n %}
+        
+{% block content %}
+        <form action="" method="POST" class="form-stacked"  enctype="multipart/form-data" >
+            {% csrf_token %}
+            {{formatform.as_p}}
+            {{torrentform.as_p}}
+            <div class="actions">
+                <input type="submit" class="btn primary"/>
+            </div>
+        </form>
+{% endblock %}

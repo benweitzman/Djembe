@@ -11,12 +11,13 @@
         <form method="post" action=".">
             {% csrf_token %}
             {{ form.as_p }}
-
-            <input type="submit" value="{% trans 'Log in' %}" />
-            <input type="hidden" name="next" value="{{ next }}" />
+            <div class="actions">
+                <input type="submit" value="{% trans 'Log in' %}" class="btn primary"/>
+                <input type="hidden" name="next" value="{{ next }}" />
+            </div>
         </form>
         <p>
-            {% trans "Forgot password" %}? <a href="{% url auth_password_reset %}">{% trans "Reset it" %}</a>!
+            {% trans "Forgot password" %}? <a href="/accounts/password/reset/">{% trans "Reset it" %}</a>!
         </p>
     {% endif %}
 {% endblock %}

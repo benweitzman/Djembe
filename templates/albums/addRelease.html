@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+    {% if existing %}
+        An release already exists with these values.
+        <br/>
+        {{existing}}
+    {% endif %}
+    <form action="" method="POST" class="form-stacked">
+        {% csrf_token %}
+        {{form.as_p}}
+        <div class="actions">
+            <input type="submit" class="btn primary"/>
+        </div>
+    </form>
+{% endblock %}

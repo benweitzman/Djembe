@@ -1,8 +1,18 @@
 from django.http import HttpResponse
 from django.utils import simplejson
-from groups.models import *
+from plugins.music.models import *
 from forum.models import *
 from django.contrib.auth.models import User
+
+def checkUnique(request):
+    message = False
+    if request.is_ajax or True:
+        kind = request.GET['kind']
+        letters = request.GET['letters']
+        if kind == "artists":
+            if Artist.objects.filter(name=letters):
+                message = True
+    return HttpResponse(simplejson.dumps(message))
 
 def index(request):
     message= "[]"

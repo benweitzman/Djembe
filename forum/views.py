@@ -50,6 +50,7 @@ def viewForum(request,forum_id):
         newThread.save()
         forum.threads.add(newThread)
         forum.save()
+        return HttpResponseRedirect(newThread.get_absolute_url())
     threads = Thread.objects.filter(
         forum=forum
     ).annotate(

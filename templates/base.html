@@ -17,6 +17,30 @@
                 if ($(e.target).val() == "") $(e.target).val($(e.target).data("default"));
             });
         }
+        function checkUnique(a,b) {
+            a.data("type",b)
+            a.data("unique",true)
+            a.change(function(e) {
+                $.get("/ajax/unique",
+                      {letters:a.val(),
+                          kind:a.data("type"),
+                          unique:true},
+                      function(data) {
+                          response = $.parseJSON(data)
+                          a.data("unique",response);
+                          if (response) {
+                              a.parent().parent().addClass("warning")
+                              a.parent().append("<span class=\"help-inline\">Not unique</span>")
+                          } else {
+                              a.parent().parent().removeClass("warning")
+                              a.parent().children("span").remove()
+                          }
+
+                      }
+                );
+
+            });
+        }
         function autocomplete(a,b) {
             a.data("type",b)
             a.attr("autocomplete","off");
@@ -154,6 +178,13 @@
                   $($("#topNav li")[i]).addClass("active")
               }
             }
+            $("img").click(function (e) {
+                $("#stage").html(e.target.outerHTML);
+                $("#lightbox").css("display","block");
+                $("#lightbox").click(function () {
+                    $("#lightbox").css("display","none");
+                })
+            });
             addDefault($("#hSearchArtist input"));
             addDefault($("#hSearchAlbum input"));
             addDefault($("#hSearchUser input"));
@@ -225,6 +256,12 @@
 </head>
 
 <body>
+<div id="lightbox">
+    <div id="curtain"></div>
+    <div id="stage">
+
+    </div>
+</div>
 <div id="autocomplete"></div>
 <div id="centerSearch">
     <div id="background"></div>
@@ -241,8 +278,8 @@
             <a class="brand" href="/">Djembe</a>
             <ul class="nav" id="topNav">
                 <li><a href="/">Home</a></li>
-                <li><a href="/artists/">Artists</a></li>
-                <li><a href="/forums/">Forum</a></li>
+                <li><a href="{%url plugins.music.views.artistsIndex%}">Artists</a></li>
+                <li><a href="{%url forum.views.index%}">Forum</a></li>
             </ul>
             <!--<ul class="nav">
                 <li><form name="albums" class="search" id="hSearchAlbum">
@@ -262,9 +299,19 @@
                 <li class="dropdown" data-dropdown="dropdown">
                     <a href="#" class="dropdown-toggle">{{user.username}}</a>
                     <ul class="dropdown-menu">
-                        <li><a href="/profile/mine">View Profile</a></li>
-                        <li><a href="/profile/edit">Edit</a></li>
+                        <li><a href="{%url userprofile.views.mine%}">View Profile</a></li>
+                        <li><a href="{%url userprofile.views.editProfile%}">Edit</a></li>
                         <li><a href="{% url django.contrib.auth.views.logout %}">Logout</a></li>
+                        {% if user.get_profile.invites > 0 or user.is_staff %}
+                        <li class="divider"></li>
+                        <li><a href="{% url invitation.views.invite %}">Invite (
+                            {% if user.is_staff %}
+                                INF
+                            {% else %}
+                                {{user.get_profile.invites}}
+                            {% endif %}
+                        )</a></li>
+                        {% endif %}
                         {% if user.is_staff %}
                         <li class="divider"></li>
                         <li><a href="/admin/">Admin</a></li>
@@ -276,6 +323,7 @@
     </div>
 </div>
 {% endblock %}
+
 <div class="container">
     <div id="content">
         {% block content %}{% endblock %}

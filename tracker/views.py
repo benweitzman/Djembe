@@ -17,6 +17,7 @@ from django.db import IntegrityError
 
 def announce(request,key):
     #raise Http404
+    print 'blah'
     query = dict(parse_qsl(request.META['QUERY_STRING']))
     if not query.get('info_hash'):
         raise Http404
@@ -27,7 +28,6 @@ def announce(request,key):
         torrent = Torrent.objects.get(info_hash=info_hash)
         # required fields
         ip = request.META['REMOTE_ADDR']
-        print ip
         port = request.GET['port']
         peer_id = request.GET['peer_id']
         event = request.GET.get('event')
@@ -56,19 +56,32 @@ def announce(request,key):
                 peer.ip = ip
                 peer.port = port
                 peer.save()
+                torrent.seeders += 1
                 if torrent.downloaded == 0 and left == 0:
                     torrent.downloaded += 1
-                    torrent.save()
+                torrent.save()
 
         elif 'stopped' in event:
             try:
+                print 'stopped'
                 peer = Peer.objects.get(peer_id=peer_id, torrent=torrent)
                 peer.delete()
+                torrent.seeders -= 1
+                torrent.save()
             except Peer.DoesNotExist:
                 pass
         elif 'completed' in event:
             torrent.downloaded += 1
             torrent.save()
+            try:
+                peer = Peer.objects.get(peer_id=peer_id, torrent=torrent)
+                user = peer.user
+                profile = user.get_profile()
+                profile.snatched.add(torrent)
+                profile.save()
+            except Peer.DoesNotExist:
+                pass
+
 
         if numwant:
                 # The random order is expensive. by caching for the announce interval, we guarantee that

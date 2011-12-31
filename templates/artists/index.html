@@ -4,11 +4,11 @@
         <ul>
             {% for artist in artists %}
                 <li>
-                    <a href="/artists/{{ artist.name }}">{{ artist.name }}</a>
+                    <a href="{% url plugins.music.views.artistPage artist_id=artist.id%}">{{ artist.name }}</a>
                     <ul>
                         {% if artist.album_set.all %}
                             {% for album in artist.album_set.all %}
-                                <li><a href="/albums/{{ album }}">{{ album}}</a></li>
+                                <li><a href="{%url plugins.music.views.albumPage album_id=album.id%}">{{ album}}</a></li>
                                 {% if album.tags.all %}
                                     <h6>Tags</h6>
                                     <ul>

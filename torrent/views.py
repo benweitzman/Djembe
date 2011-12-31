@@ -16,14 +16,14 @@ def get(request, id):
     torrent = Torrent.objects.get(id=id)
     data = open(torrent.torrent.file.name, "rb").read()
     info = bencode.bdecode(data)
-    info['announce'] = str("http://localhost:8000/"+request.user.get_profile().key+"/announce")
+    info['announce'] = str("http://localhost:8000/tracker/"+request.user.get_profile().key+"/announce")
     #print info['announce']
     fileName = "file.torrent"
     if "fileName" in request.GET:
         fileName = request.GET['fileName']
     newTorrent = bencode.bencode(info)
     response = HttpResponse(newTorrent)
-    response['Content-Disposition'] = 'attachment; filename='+fileName
+    response['Content-Disposition'] = 'attachment; filename='+fileName+".torrent"
     return response
 
 class DivErrorList(ErrorList):

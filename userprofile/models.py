@@ -6,6 +6,7 @@ from django.forms import ModelForm
 from django import forms
 from django.utils.safestring import mark_safe
 from forum.models import *
+from torrent.models import Torrent
 
 SEARCH_TYPES = (
     (1,"Artists"),
@@ -44,6 +45,13 @@ class UserProfile(models.Model):
     postsPerPage = models.IntegerField(default=25,choices=PPP,verbose_name="Posts Per Page")
     megasearch = models.CharField(max_length=200,blank=True)
     key = models.CharField(max_length=35,editable=False,default='')
+    invites = models.IntegerField(editable=False,default=0)# -1 = inf
+    snatched = models.ManyToManyField(Torrent)
+
+    class Meta:
+        permissions = (
+            ("can_invite","Can send invites"),
+        )
 
     def searchtypes(self):
         strings = self.megasearch.split(",")

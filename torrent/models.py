@@ -6,11 +6,10 @@ from django import forms
 #from django.db.models.fields import SlugField
 
 class Torrent(models.Model):
-    title = models.CharField(max_length=80)
     #slug = SlugField()
     user = models.ForeignKey(User, blank=True, null=True, verbose_name='Author')
     #image = models.ImageField(_('Image'), upload_to='img/torrents', blank=True, null=True)
-    description = models.TextField()
+    description = models.TextField(blank=True,null=True)
     added = models.DateTimeField(auto_now_add=True, editable=False)
     torrent = models.FileField(upload_to='torrent/',max_length=200)
     data = JSONField(editable=False, default=lambda: {})
@@ -19,7 +18,18 @@ class Torrent(models.Model):
     leechers = models.PositiveIntegerField(editable=False, default=0)
     downloaded = models.PositiveIntegerField(editable=False, default=0)
 
+    def size(self):
+        if 'length' in self.data:
+            return self.data['length']
+        else:
+            length = 0
+            for i in self.data['files']:
+                length += i['length']
+            return length
+
 class TorrentUploadForm(ModelForm):
     class Meta:
         model = Torrent
-        exclude = ("user")
+        widgets = (
+            {"user":forms.HiddenInput()}
+        )
