@@ -9,27 +9,19 @@ from django.shortcuts import render_to_response
 from django.core.paginator import Paginator
 
 def index(request):
-    forums = dict()
-    for category in CATEGORIES:
-        catForums = Forum.objects.filter(
-            category=category[0]
-        ).annotate(
-            Count('threads__posts',distinct=True),
-            Count('threads',distinct=True)
-        )
-        for i in catForums:
-            i.latest_thread = i.get_latest()
-            if i.latest_thread:
-                i.pages = i.latest_thread.posts__count/request.user.get_profile().postsPerPage
-                try:
-                    lastRead = ThreadView.objects.get(user=request.user,thread=i.latest_thread)
-                    i.lastRead = lastRead.post_id
-                except ThreadView.DoesNotExist:
-                    i.lastRead = 0
-            else:
-                i.pages = 0
+    forums = Forum.objects.all()
+    for i in forums:
+        i.latest_thread = i.get_latest()
+        if i.latest_thread:
+            i.pages = i.latest_thread.posts__count/request.user.get_profile().postsPerPage
+            try:
+                lastRead = ThreadView.objects.get(user=request.user,thread=i.latest_thread)
+                i.lastRead = lastRead.post_id
+            except ThreadView.DoesNotExist:
                 i.lastRead = 0
-        forums[category[1]] = catForums
+        else:
+            i.pages = 0
+            i.lastRead = 0
     return render_to_response("forums/index.html",context_instance=RequestContext(request,{"forums":forums}))
 
 def viewPost(request,post_id):
@@ -74,6 +66,21 @@ def viewForum(request,forum_id):
 
 def viewThread(request,thread_id,page=1):
     thread = Thread.objects.annotate(Count("posts")).get(id=thread_id)
+    if "body" in request.POST:
+        recentPost = []
+        if thread.posts.all():
+            recentPost = thread.posts.latest("datePosted")
+        if recentPost and recentPost.poster == request.user:
+            recentPost.text += '\n\n'+request.POST['body']
+            recentPost.editor = request.user
+            recentPost.save()
+        else:
+            newPost = Post.objects.create(poster=request.user,index=thread.posts__count)
+
+            newPost.text = request.POST['body']
+            newPost.save()
+            thread.posts.add(newPost)
+            thread.save()
     p = Paginator(thread.posts.all(),request.user.get_profile().postsPerPage)
     showpages = 9
     startpage = 0
@@ -97,21 +104,7 @@ def viewThread(request,thread_id,page=1):
     except ThreadView.DoesNotExist:
         threadView = ThreadView.objects.create(user=request.user,thread=thread,post=lastPost)
         threadView.save()
-    if "body" in request.POST:
-        recentPost = []
-        if thread.posts.all():
-            recentPost = thread.posts.latest("datePosted")
-        if recentPost and recentPost.poster == request.user:
-            recentPost.text += '\n\n'+request.POST['body']
-            recentPost.editor = request.user
-            recentPost.save()
-        else:
-            newPost = Post.objects.create(poster=request.user,index=thread.posts__count)
 
-            newPost.text = request.POST['body']
-            newPost.save()
-            thread.posts.add(newPost)
-            thread.save()
     return render_to_response("forums/viewThread.html",context_instance=RequestContext(request,{"thread":thread,
                                                                                                 "pages":pages,
                                                                                                 "posts":posts,

@@ -1,6 +1,8 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('ajax.views',
-    (r'^$','index'),
-    (r'^unique/$','checkUnique'),
+    url(r'^$','index'),
+    url(r'^unique/$','checkUnique'),
+    url(r'^previewpost/$','postPreview'),
+    url(r'^editpost/$','editPost'),
 )

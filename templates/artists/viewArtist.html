@@ -93,7 +93,7 @@
                                     » {{format.format|upper}} / {{format.bitrate|capfirst}}
                                     <span class="pull-right">
                                         [
-                                            <a href="/torrent/get/{{format.torrent.id}}?fileName={{format.fileName}}">DL</a>
+                                            <a href="{%url torrent.views.get format.torrent.id%}">DL</a>
                                         ]
                                     </span>
                                 </td>
@@ -135,30 +135,42 @@
                         <img src="{{artist.photo.get.name}}"/>
                     </div>
                 </div>
-                {% if artist.taglist %}
-                    <div class="box">
-                        <div class="head">Tags</div>
-                        <div class="pad">
-                            {% for tag, count in artist.taglist %}
-                                {{tag}} ({{count}})<br/>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
+            {% else %}
                 <div class="box">
-                    <div class="head">
-                        Statistics
-                    </div>
+                    <div class="head">Add Image</div>
                     <div class="pad">
-                        <ul>
-                            <li>Number of groups: {{artist.album_set.count}}</li>
-                            <li>Number of torrents: {{artist.torrent__count}}</li>
-                            <li>Number of seeders: {{artist.seeders}}</li>
-                            <li>Number of leeches: {{artist.leechers}}</li>
-                            <li>Number of snatches: {{artist.snatches}}</li>
-                        </ul>
+                        <form action="" method="POST" class="form-stacked" style="padding-left: 0">
+                            {% csrf_token %}
+                            {{photoForm.as_p}}
+                            <input type="submit" class="btn primary"/>
+                        </form>
                     </div>
                 </div>
             {% endif %}
+            {% if artist.taglist %}
+                <div class="box">
+                    <div class="head">Tags</div>
+                    <div class="pad">
+                        {% for tag, count in artist.taglist %}
+                            {{tag}} ({{count}})<br/>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            <div class="box">
+                <div class="head">
+                    Statistics
+                </div>
+                <div class="pad">
+                    <ul>
+                        <li>Number of groups: {{artist.album_set.count}}</li>
+                        <li>Number of torrents: {{artist.torrent__count}}</li>
+                        <li>Number of seeders: {{artist.seeders}}</li>
+                        <li>Number of leeches: {{artist.leechers}}</li>
+                        <li>Number of snatches: {{artist.snatches}}</li>
+                    </ul>
+                </div>
+            </div>
+
         </div>
 {% endblock %}

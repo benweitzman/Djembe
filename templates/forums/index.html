@@ -5,10 +5,10 @@
     <ul class="breadcrumb">
         <li class="active">Forums</li>
     </ul>
-    {% for category,cat_forums in forums.items %}
-        {% if cat_forums %}
+    {% regroup forums by category as catforums %}
+    {% for category in catforums %}
         <div class="category">
-            <div class="categoryHead">{{ category.title }}</div>
+            <div class="categoryHead">{{ category.grouper }}</div>
             <div class="forums">
                 <table>
                     <tr class="colhead">
@@ -17,8 +17,7 @@
                         <td class="topics">Topics</td>
                         <td class="posts">Posts</td>
                     </tr>
-                    {% for forum in cat_forums %}
-
+                    {% for forum in category.list %}
                         <tr>
                             <td><a href="/forums/forum/{{ forum.id }}">{{forum.title}}</a></td>
                             <td>
@@ -61,6 +60,5 @@
                 </table>
             </div>
         </div>
-        {% endif %}
     {% endfor %}
 {% endblock %}

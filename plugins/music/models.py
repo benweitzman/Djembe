@@ -1,6 +1,8 @@
 from django.db import models
-from django.db.models.aggregates import Count
+from django.db.models import Sum
+from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
+from forum.models import Post
 from tags.models import Tag
 from photo.models import Photo
 from django.db.models.signals import m2m_changed
@@ -31,6 +33,11 @@ MEDIAS = (
     ("cd","CD"),
 )
 
+VOTES = (
+    (-1,"down"),
+    (1,"up"),
+)
+
 class Album(models.Model):
     artists = models.ManyToManyField('Artist')
     #releases = models.ManyToManyField('Release',blank=True,related_name='album')
@@ -40,7 +47,7 @@ class Album(models.Model):
     photos = models.ManyToManyField(Photo,blank=True)
     releaseType = models.CharField(max_length=15,choices=RELEASE_TYPE,default="album")
     albumInfo = models.TextField(blank=True,null=True)
-
+    comments = models.ManyToManyField(Post)
 
     @models.permalink
     def get_absolute_url(self):
@@ -139,13 +146,30 @@ class AlbumFormat(models.Model):
         return self.release.album.name+" ("+str(self.release.album.released)+") ["+self.format.upper()+"]"
 
 
+
+class TagVotes(models.Model):
+    tag = models.ForeignKey('TagCount')
+    user = models.ForeignKey(User)
+    way = models.IntegerField(choices=VOTES,default=1)
+
 class TagCount(models.Model):
     album = models.ForeignKey(Album)
     tag = models.ForeignKey(Tag, related_name="tag_name")
     count = models.IntegerField(default=0)
+    voters = models.ManyToManyField(User,through=TagVotes)
 
     class Meta:
         ordering = ['-count','tag']
 
     def __unicode__(self):
         return self.album.name+":"+self.tag.name
+
+    def save(self, *args, **kwargs):
+        self.count = self.getCount()
+        super(TagCount,self).save(*args,**kwargs)
+
+    def getCount(self):
+        count = 15
+        votes = self.tagvotes_set.aggregate(count=Sum('way'))['count']
+        if votes: count += votes
+        return count

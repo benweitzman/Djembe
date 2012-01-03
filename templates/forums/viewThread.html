@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load macros %}
+{% load djembe_filters %}
 
 {% macro paginator %}
      {% if posts.has_other_pages %}
@@ -48,12 +49,18 @@
         <table class="post" id="post{{post.id}}">
             <tr>
                 <td colspan="2" class="head">
-                    <a href="/forums/post/{{post.id}}">#{{ post.id }}</a>
-                    <a href="/users/{{ post.poster.username }}">
-                        {{ post.poster.username }}
-                    </a>
-                    {{ post.datePosted|timesince }} ago
-                    <a href="#">&uarr;</a>
+                    <span class="pull-left">
+                        <a href="/forums/post/{{post.id}}">#{{ post.id }}</a>
+                        <a href="/users/{{ post.poster.username }}">
+                            {{ post.poster.username }}
+                        </a>
+                        {{ post.datePosted|timesince }} ago
+                        [<a href="#" onclick="toggleEdit({{post.id}});return false;">Edit</a>]
+                    </span>
+                    <span class="pull-right">
+                        <a href="#">&uarr;</a>
+                    </span>
+                    <span class="clear"></span>
                 </td>
             </tr>
             <tr class="body">
@@ -61,8 +68,22 @@
                     <img src="{{ post.poster.get_profile.avatar }}" />
                 </td>
                 <td class="text">
-                    <div>
-                        {{ post.text|linebreaksbr }}
+                    <div class="edit">
+                        <div class="preview"></div>
+                        <form>
+                            <textarea>
+                                {{post.text}}
+                            </textarea>
+                            <div class="actions">
+                                <input type="submit" value="Submit" class="btn primary" onclick="ajaxEdit({{post.id}},'submit');return false"/>
+                                <input type="submit" value="Preview" class="btn" onclick="ajaxEdit({{post.id}},'preview');return false"/>
+                                <input type="submit" value="Cancel" class="btn" onclick="toggleEdit({{post.id}});return false"/>
+                            </div>
+                        </form>
+
+                    </div>
+                    <div class="markup">
+                        {{ post.text|bbcode }}
                         {% if post.editor != NULL %}
                             <br/><br/>
                             Last edited by <a href="/users/{{post.editor.username}}">{{post.editor.username}}</a>
@@ -100,8 +121,48 @@
             {% csrf_token %}
             <textarea name="body"></textarea>
             <br />
-            <input type="submit"/>
+            <div class="actions">
+            <input type="submit" class="btn primary"/>
+            </div>
         </form>
     </div>
+    <script type="text/javascript">
+        function toggleEdit(id){
+            $("#post"+id+" .edit").toggle();
+            $("#post"+id+" .markup").toggle();
+            unpreviewEdit(id)
+        }
+        function ajaxEdit(id,action) {
+            edit = $("#post"+id+" .edit");
+            markup = $("#post"+id+" .markup");
+            function preview(response) {
+                console.log("a")
+                edit.find(".preview").html(response).show();
+                edit.find("textarea").hide();
+                edit.find("input[value='Preview']").attr("value","Edit").attr("onclick","unpreviewEdit("+id+");return false;");
+            }
+            function editCallback(response) {
+                markup.html(response);
+                toggleEdit(id);
+            }
+            if (action=="preview") {
+                url = "{%url ajax.views.postPreview%}";
+                callback = preview;
+            } else {
+                url = "{%url ajax.views.editPost%}?id="+id;
+                callback = editCallback;
+            }
+            $.post(url,{
+                       "text":edit.find("textarea").val(),
+                       "csrfmiddlewaretoken":"{{csrf_token}}"
+                   },callback);
+        }
+        function unpreviewEdit(id) {
+            edit = $("#post"+id+" .edit");
+            edit.find("textarea").show();
+            edit.find(".preview").hide();
+            edit.find("input[value='Edit']").attr("value","Preview").attr("onclick","ajaxEdit("+id+",'preview');return false;");
+        }
+    </script>
 
 {% endblock %}

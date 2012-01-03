@@ -2,147 +2,30 @@
 {% load i18n %}
 
 {% block content %}
-    <script>
-        function toggleRelease(id,c,e) {
-            if (c.innerHTML=="+") {
-                c.innerHTML = "-";
-                $(".release"+id).removeClass("releaseCollapsed");
-            } else {
-                c.innerHTML = "+";
-                $(".release"+id).addClass("releaseCollapsed");
-            }
-        }
-    </script>
-    {% if preview %}
-        <div class="row">
-        <form class="span7 offset4">
-            Does this look ok?
-            <div class="actions">
-                <a href="#" class="btn primary">Yes</a>
-                <input type="submit" class="btn" value="No" />
-            </div>
-        </form>
-        </div>
-    {% endif %}
-    <h3>
-        {% for artist in album.artists.all %}
-            <a href="{%url plugins.music.views.artistPage artist_id=artist.id%}">{{artist}}</a>
-            {% if not forloop.last %} & {% endif %}
-        {% endfor %} -
-        {{ album }}
-        [{{album.released}}]
-        [{{album.releaseType|capfirst}}]
-    </h3>
-    <div class="main">
-        <div class="releaseType">
-            <table>
-                <tr class="colhead">
-                    <td>Torrents</td>
-                    <td class="size">Size</td>
-                    <td class="stat">&#8635;</td>
-                    <td class="stat">&uArr;</td>
-                    <td class="stat">&dArr;</td>
+        <table>
+            <tr class="colhead">
+                <td>Album</td>
+                <td>Artist</td>
+                <td>Time</td>
+            </tr>
+            {% for album in albums %}
+                <tr>
+                    <td>
+                        <a href="{{album.get_absolute_url}}">{{album.name}}</a>
+                    </td>
+                    <td>
+                        {% for artist in album.artists.all %}
+                            <a href="{{artist.get_absolute_url}}">{{artist.name}}</a>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% if album.sort %}
+                            {{album.sort|timesince}} ago
+                        {% else %}
+                            No torrents
+                        {% endif %}
+                    </td>
                 </tr>
-                {% for release in album.releases.all %}
-                    <tr>
-                        <td colspan="5">
-                            {% if release.albumformat_set.all %}
-                                <a href="#" onclick="toggleRelease({{release.id}},this,event);return false;">-</a>
-                            {% endif %}
-                            <strong>{{release.format}}</strong>
-                        </td>
-                    </tr>
-                    {% for format in release.albumformat_set.all %}
-                        <tr class="release{{release.id}}">
-                            <td>
-                                » {{format.format|upper}} / {{format.bitrate|capfirst}}
-                                <span class="pull-right">
-                                    [
-                                        <a href="/torrent/get/{{format.torrent.id}}?fileName={{format.fileName}}">DL</a>
-                                    ]
-                                </span>
-                            </td>
-                            <td>
-                                {{format.torrent.size|filesizeformat}}
-                            </td>
-                            <td>
-                                {{format.torrent.downloaded}}
-                            </td>
-                            <td>
-                                {{format.torrent.seeders}}
-                            </td>
-                            <td>
-                                {{format.torrent.leechers}}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                {% endfor %}
-            </table>
-        </div>
-        <div class="box">
-            <div class="head">Album Info</div>
-            <div class="pad">
-                {{album.albumInfo}}
-            </div>
-        </div>
-    </div>
-
-
-
-    <div class="sidebar">
-        {% if album.photos.all %}
-            <div class="box">
-                <div class="head">Cover</div>
-                <div class="pad">
-                    <img src="{{album.photos.all.0.name}}"/>
-                </div>
-            </div>
-        {% else %}
-            <div class="box">
-                <div class="head">Add Cover</div>
-                <div class="pad">
-                    <form action="" method="POST" class="form-stacked" style="padding-left: 0">
-                        {% csrf_token %}
-                        {{photoForm.as_p}}
-                        <input type="submit" class="btn primary"/>
-                    </form>
-                </div>
-            </div>
-        {% endif %}
-        {% if album.tagcount_set.all %}
-            <div class="box">
-                <div class="head">Tags</div>
-                <div class="pad">
-                    <ul>
-                    {% for tagcount in album.tagcount_set.all %}
-                        <li>
-                            <span class="pull-left">{{ tagcount.tag.name }}</span>
-                            <span class="pull-right">
-                                [
-                                <a href="{%url plugins.music.views.tagVote album_id=album.id tag_id=tagcount.tag.id action='down'%}">-</a>
-                                ]
-                                {{ tagcount.count }}
-                                [
-                                <a href="{%url plugins.music.views.tagVote album_id=album.id tag_id=tagcount.tag.id action='up'%}">+</a>
-                                ]
-                            </span>
-                            <div class="clear"></div>
-                        </li>
-                    {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        {% endif %}
-        <div class="box">
-            <div class="head">Add Tag</div>
-            <div class="pad">
-                <form action="./addtag/" method="POST">
-                    {% csrf_token %}
-                    <input type="text" name="tag"/>
-                    <br /><br />
-                    <input type="submit" value="Add Tag" class="btn primary"/>
-                </form>
-            </div>
-        </div>
-    </div>
+            {% endfor %}
+        </table>
 {% endblock %}

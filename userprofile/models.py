@@ -46,7 +46,9 @@ class UserProfile(models.Model):
     megasearch = models.CharField(max_length=200,blank=True)
     key = models.CharField(max_length=35,editable=False,default='')
     invites = models.IntegerField(editable=False,default=0)# -1 = inf
-    snatched = models.ManyToManyField(Torrent)
+    snatched = models.ManyToManyField(Torrent,editable=False)
+    downloaded = models.IntegerField(default=0,editable=False)
+    uploaded = models.IntegerField(default=0,editable=False)
 
     class Meta:
         permissions = (

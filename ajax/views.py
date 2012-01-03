@@ -3,6 +3,7 @@ from django.utils import simplejson
 from plugins.music.models import *
 from forum.models import *
 from django.contrib.auth.models import User
+from postmarkup import render_bbcode
 
 def checkUnique(request):
     message = False
@@ -50,6 +51,19 @@ def index(request):
             message = simplejson.dumps(response)
     return HttpResponse(message)
 
-#def mega(request):
-    #if request.is_ajax():
-        
+def postPreview(request):
+    if request.POST:
+        xhtml = render_bbcode(request.POST.get('text'))
+        return HttpResponse(xhtml+"<br/><br/>Last edited by <a href='/users/"+request.user.username+"'>"+request.user.username+"</a> just now")
+    return HttpResponse("")
+
+def editPost(request):
+    if request.POST and request.POST.get('text') and request.GET.get('id'):
+        id = int(request.GET.get('id'))
+        post = Post.objects.get(id=id)
+        post.text = request.POST.get('text')
+        post.editor = request.user
+        post.save()
+        xhtml = render_bbcode(request.POST.get('text'))
+        return HttpResponse(xhtml+"<br/><br/>Last edited by <a href='/users/"+request.user.username+"'>"+request.user.username+"</a> just now")
+    return HttpResponse("")

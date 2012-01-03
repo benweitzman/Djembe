@@ -1,4 +1,6 @@
 from annoying.fields import JSONField
+from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.contrib.auth.models import User
 from django.forms import ModelForm
@@ -17,6 +19,10 @@ class Torrent(models.Model):
     seeders = models.PositiveIntegerField(editable=False, default=0)
     leechers = models.PositiveIntegerField(editable=False, default=0)
     downloaded = models.PositiveIntegerField(editable=False, default=0)
+
+    content_type = models.ForeignKey(ContentType,editable=False)
+    object_id = models.PositiveIntegerField(editable=False)
+    content_object = generic.GenericForeignKey('content_type', 'object_id')
 
     def size(self):
         if 'length' in self.data:

@@ -1,12 +1,13 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>{% block title %}Djembe{% endblock %}</title>
-    <link rel="stylesheet" href="/static/styles/main.css" />
-    <link rel="stylesheet" href="/static/styles/bootstrap.min.css">
-    <script src="/static/scripts/jquery-1.7.1.min.js"></script>
-    <script src="/static/scripts/bootstrap-dropdown.js"></script>
-    <script src="/static/scripts/bootstrap-modal.js"></script>
+    <link rel="stylesheet" href="{% static "styles/main.css" %}" />
+    <link rel="stylesheet" href="{% static "styles/bootstrap.min.css" %}">
+    <script src="{% static "scripts/jquery-1.7.1.min.js" %}"></script>
+    <script src="{% static "scripts/bootstrap-dropdown.js" %}"></script>
+    <script src="{% static "scripts/bootstrap-modal.js" %}"></script>
     <script>
         function addDefault(a) {
             a.data("default",a.val());
@@ -279,6 +280,7 @@
             <ul class="nav" id="topNav">
                 <li><a href="/">Home</a></li>
                 <li><a href="{%url plugins.music.views.artistsIndex%}">Artists</a></li>
+                <li><a href="{%url plugins.music.views.albumsIndex%}">Albums</a></li>
                 <li><a href="{%url forum.views.index%}">Forum</a></li>
             </ul>
             <!--<ul class="nav">
