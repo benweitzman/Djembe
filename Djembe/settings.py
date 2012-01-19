@@ -56,6 +56,7 @@ EMAIL_HOST_USER = config.get('email','EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config.get('email','EMAIL_HOST_PASSWORD')
 EMAIL_PORT = config.get('email','EMAIL_PORT')
 EMAIL_USE_TLS = config.get('email','EMAIL_USE_TLS')
+DEFAULT_FROM_EMAIL = 'djembe@cream.ly'
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT_PATH,"media")
@@ -158,7 +159,7 @@ INSTALLED_APPS = (
     'forum',
     'torrent',
     'tracker',
-    'ajax_select',
+#    'ajax_select',
     #'djangobb_forum',
     #'haystack',
     #'messages',

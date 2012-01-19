@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from ajax_select import urls as ajax_select_urls
+#from ajax_select import urls as ajax_select_urls
 admin.autodiscover()
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -15,7 +15,7 @@ urlpatterns = patterns('',
     url(r'^tracker/',include('tracker.urls')),
     url(r'^search/', include('haystack.urls')),
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    url(r'^admin/lookups/', include(ajax_select_urls)),
+ #   url(r'^admin/lookups/', include(ajax_select_urls)),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$','Djembe.views.index'),
     url(r'^about/','Djembe.views.about'),

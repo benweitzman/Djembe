@@ -16,7 +16,7 @@ def get(request, id):
     torrent = Torrent.objects.get(id=id)
     data = open(torrent.torrent.file.name, "rb").read()
     info = bencode.bdecode(data)
-    info['announce'] = str("http://localhost:8000/tracker/"+request.user.get_profile().key+"/announce")
+    info['announce'] = str("http://shakazulu.cream.ly:8000/tracker/"+request.user.get_profile().key+"/announce")
     #print info['announce']
     fileName = "file.torrent"
     try:

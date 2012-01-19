@@ -24,6 +24,12 @@ class Torrent(models.Model):
     object_id = models.PositiveIntegerField(editable=False)
     content_object = generic.GenericForeignKey('content_type', 'object_id')
 
+    def getSeeders(self):
+        return self.peers.filter(left=0).count()
+    
+    def getLeechers(self):
+        return self.peers.exclude(left=0).count()
+        
     def size(self):
         if 'length' in self.data:
             return self.data['length']
