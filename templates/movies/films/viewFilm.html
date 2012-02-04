@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+    <div class="page-header">
+        <h3>
+            {{ film.title }} [{{ film.year }}] by
+            {% for director in film.directors.all %}
+                <a href="#">{{ director.name }}</a>
+                {% if not forloop.last %}
+                    and
+                {% endif %}
+            {% endfor %}
+        </h3>
+    </div>
+    <div class="pull-right">
+        <ul class="linkbox">
+            <li>[<a href="#">Add Edition</a>]</li>
+        </ul>
+    </div>
+    <div class="clear"></div>
+    <div class="row">
+        <div class="main span12">
+            <div class="releaseType">
+                <table>
+                    <tr class="colhead">
+                        <td>Torrents</td>
+                        <td class="size">Size</td>
+                        <td class="stat">&#8635;</td>
+                        <td class="stat">&uArr;</td>
+                        <td class="stat">&dArr;</td>
+                    </tr>
+                    {% for edition in film.editions.all %}
+                        <tr>
+                            <td colspan="5">
+                                {% if edition.movieformat_set.all %}
+                                    <a href="#">-</a>
+                                {% endif %}
+                                <strong>{{ edition.name }}</strong>
+                                <span class="pull-right">[<a href="#">Add Format</a>]</span>
+                                <span class="clear"></span>
+                            </td>
+                        </tr>
+                        {% for format in edition.movieformat_set.all %}
+                            <tr class="release{{ edition.id }}">
+                                <td>
+                                    »
+                                    <span class="pull-right">
+                                        [
+                                        <a href="#">DL</a>
+                                        ]
+                                    </span>
+                                </td>
+                                <td>
+                                    {{ format.torrent.size|filesizeformat }}
+                                </td>
+                                <td>
+                                    {{ format.torrent.downloaded }}
+                                </td>
+                                <td>
+                                    {{ format.torrent.getSeeders }}
+                                </td>
+                                <td>
+                                    {{ format.torrent.getLeechers }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="box">
+                <div class="head">Film Synopsis</div>
+                <div class="pad">
+                    bo
+                </div>
+            </div>
+        </div>
+        <div class="sidebar span4">
+            <div class="box">
+                {% if film.photos.all %}
+                    <div class="head">Cover</div>
+                    <div class="pad">
+                        <img src="{{ film.photos.all.0.name }}"/>
+                    </div>
+                {% else %}
+                    <div class="head">Add Cover</div>
+                    <div class="pad">
+                        <form action="" method="POST" class="form-stacked" style="padding-left: 0">
+                            {% csrf_token %}
+                            {{photoform.as_p}}
+                            <input type="submit" value="Submit" class="btn primary" name="photoform"/>
+
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="box">
+                <div class="head">Movie Info</div>
+                <div class="pad">
+                    {% if film.writers.all %}
+                        <span>Writers:</span>
+                        {% for writer in film.writers.all %}
+                            <a href="#">{{ writer.name }}</a>{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% if film.producers.all %}
+                        <span>Producers:</span>
+                        {% for producer in film.producers.all %}
+                            <a href="#">{{ producer.name }}</a>{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -4,6 +4,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models.fields import TextField
 from django.forms import ModelForm
+from django.forms.formsets import BaseFormSet
 from django.forms.widgets import Widget
 from django.forms.util import flatatt
 from django.forms.widgets import TextInput
@@ -45,15 +46,41 @@ class MultipleTextField(forms.models.ModelMultipleChoiceField):
     widget = MultipleTextFieldWidget
     pass
 
+class LazyChoiceField(forms.ChoiceField):
+    def __init__(self, *args, **kwargs):
+        super(LazyChoiceField, self).__init__(*args, **kwargs)
+
+    def valid_value(self, value):
+        return True
+
+class ArtistNameForm(forms.Form):
+    name = forms.CharField()
+    id = LazyChoiceField(required=False)
+    def __init__(self,*args,**kwargs):
+        initial = kwargs.get('initial',{})
+        choices = initial.get('choices')
+        super(ArtistNameForm,self).__init__(*args,**kwargs)
+        if choices:
+            self.fields['id'].choices = choices
+            if len(choices) == 1:
+                self.fields['id'].widget.attrs['style'] = "display:none"
+
+class BaseArtistNameFormSet(BaseFormSet):
+    def add_fields(self, form, index):
+        super(BaseArtistNameFormSet,self).add_fields(form,index)
+        form.fields['id'].widget.attrs['class']="span1"
+
+
+
 class AlbumForm(ModelForm):
     def __init__(self,*args, **kwargs):
         super(AlbumForm,self).__init__(*args,**kwargs)
         #print self.fields['artists']
-        self.fields['artists'] = MultipleTextField(Artist.objects)
+        #self.fields['artists'] = MultipleTextField(Artist.objects)
         #print self.fields['artists']
     class Meta:
         model = Album
-        exclude = ('photos','tags')
+        exclude = ('photos','tags','artists')
         widgets = {
             #'artists':MultipleTextFieldWidget()
         }

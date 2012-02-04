@@ -3,7 +3,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
 from django.db.models import Count
+from tags.models import *
 from django.db.models.aggregates import Max, Min
+from django.forms.formsets import formset_factory
 from django.forms.util import ErrorList
 from django.utils.safestring import mark_safe
 import hashlib
@@ -23,7 +25,7 @@ def addArtist(request):
         if form.is_valid():
             artist = form.save()
             return HttpResponseRedirect(reverse(artistPage,kwargs={"artist_id":artist.id}))
-    return render_to_response('artists/new.html',context_instance=RequestContext(request,{"form":form}))
+    return render_to_response('music/artists/new.html',context_instance=RequestContext(request,{"form":form}))
 
 def editArtist(request,artist_id):
     artist = Artist.objects.get(id=artist_id)
@@ -33,13 +35,13 @@ def editArtist(request,artist_id):
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse(artistPage,kwargs={"artist_id":artist.id}))
-    return render_to_response('artists/edit.html',context_instance=RequestContext(request,{'form':form}))
+    return render_to_response('music/artists/edit.html',context_instance=RequestContext(request,{'form':form}))
 
 def artistsIndex(request):
     if "artist" in request.GET:
         return HttpResponseRedirect(reverse(artistPage,kwargs={"artist_id":request.GET["artist"]}))
     artists = Artist.objects.annotate(sort=Min("album__releases__torrents__added")).all().order_by('-sort')[:5]
-    return render_to_response('artists/index.html',{'artists':artists},context_instance=RequestContext(request))
+    return render_to_response('music/artists/index.html',{'artists':artists},context_instance=RequestContext(request))
 
 def artistPage(request, artist_id):
     artist = Artist.objects.annotate(
@@ -64,32 +66,52 @@ def artistPage(request, artist_id):
             artists=artist,
         ).order_by("-released")
         albums[release_type[1]] = catAlbums
-    return render_to_response('artists/viewArtist.html',context_instance=RequestContext(request,{"artist":artist,
+    return render_to_response('music/artists/viewArtist.html',context_instance=RequestContext(request,{"artist":artist,
                                                                                                  "albums":albums,
                                                                                                  "photoForm":photoform}))
 
 def addAlbum(request,artist_id):
     artist = Artist.objects.get(id=artist_id)
     form = AlbumForm(initial={"artists":[artist_id]})
+    artistFormSet= formset_factory(ArtistNameForm,extra=0,formset=BaseArtistNameFormSet)
+    artistsWithName = Artist.objects.filter(name=artist.name)
+    artists = artistFormSet(initial=[
+        {"name":artist.name,"choices":map(lambda x:(x.id,x.id),artistsWithName),"id":artist_id}
+    ])
     if request.POST:
         post = request.POST.copy()
         #post.set('artists','b')
-        post['artists'] = list(set(map(lambda x:int(x),dict(request.POST)['artists'])))
+        #post['artists'] = list(set(map(lambda x:int(x),dict(request.POST)['artists'])))
         form = AlbumForm(post)
-        if form.is_valid():
+        artists = artistFormSet(request.POST)#,initial=[{"choices":map(lambda x:(x.id,x.id),artistsWithName)}])
+        for aform in artists:
+            nameArtists = Artist.objects.filter(name=aform['name'].value())
+            aform.fields['id'].choices = map(lambda x:(x.id,x.id),nameArtists)
+            if len(nameArtists) == 1:
+                aform.fields['id'].widget.attrs['style'] = "display:none"
+        if artists.is_valid() and form.is_valid():
             try:
-                a = form.save(commit=False)
-                return render_to_response('albums/viewAlbum.html',context_instance=RequestContext(request,{'album':a,
+                a = form.save()
+                print artists.cleaned_data
+                for artist in artists.cleaned_data:
+                    if artist['id'] == u'' or artist['id'] == None:
+                        newArtist = Artist.objects.create(name=artist['name'])
+                    else:
+                        newArtist = Artist.objects.get(id=int(artist['id']))
+                    a.artists.add(newArtist)
+                a.save()
+                return render_to_response('music/albums/viewAlbum.html',context_instance=RequestContext(request,{'album':a,
                                                                                                    'preview':True}))
             except IntegrityError as strerror:
                 errors = form._errors.setdefault(forms.forms.NON_FIELD_ERRORS, forms.util.ErrorList())
                 errors.append(strerror)
 
-    return render_to_response('albums/new.html',context_instance=RequestContext(request,{"artist":artist,
-                                                                                                 "form":form}))
+    return render_to_response('music/albums/new.html',context_instance=RequestContext(request,{"artist":artist,
+                                                                                         "form":form,
+                                                                                         "artists":artists}))
 def albumsIndex(request):
     albums = Album.objects.annotate(sort=Min("releases__torrents__added")).order_by('-sort')[:5]
-    return render_to_response('albums/index.html',context_instance=RequestContext(request,{"albums":albums}))
+    return render_to_response('music/albums/index.html',context_instance=RequestContext(request,{"albums":albums}))
 
 
 def albumPage(request, album_id):
@@ -125,7 +147,7 @@ def albumPage(request, album_id):
     pages = map(lambda x: p.page(x),p.page_range)
     showPages = dict(enumerate(pages[int(startpage):int(stoppage)]))
     posts = p.page(page)
-    return render_to_response('albums/viewAlbum.html',{"album":album,
+    return render_to_response('music/albums/viewAlbum.html',{"album":album,
                                                        "photoForm":photoform,
                                                        "pages":pages,
                                                        "posts":posts,
@@ -152,7 +174,7 @@ def addRelease(request,album_id):
                 existing = Release.objects.get(album=r.album,year=r.year,catalogNumber=r.catalogNumber)
                 errors = form._errors.setdefault(forms.forms.NON_FIELD_ERRORS, forms.util.ErrorList())
                 errors.append("A release already exists with these values:\n%s" % existing)
-    return render_to_response('albums/addRelease.html',context_instance=RequestContext(request,{"album":album,
+    return render_to_response('music/albums/addRelease.html',context_instance=RequestContext(request,{"album":album,
                                                                                                 "form":form}))
 
 def addTag(request, album_id):
@@ -163,13 +185,13 @@ def addTag(request, album_id):
         album = Album.objects.get(id=album_id)
         if album:
             tag,created = Tag.objects.get_or_create(name=t)
-            if album.tagcount_set.filter(tag=tag):
-                tagcount = album.tagcount_set.get(tag=tag)
+            if album.tags.filter(tag=tag):
+                tagcount = album.tags.get(tag=tag)
             else:
-                tagcount = TagCount.objects.create(album=album,tag=tag)
+                tagcount = TagCount.objects.create(tag=tag)
                 tagcount.save()
+            album.tags.add(tagcount)
             album.save()
-            tagcount.count = tagcount.count+1
             tagcount.save()
         else:
             print "no album"
@@ -178,9 +200,8 @@ def addTag(request, album_id):
 
 def tagVote(request,album_id,tag_id,action):
     album = Album.objects.get(id=album_id)
-    tagcount = album.tagcount_set.get(tag_id=tag_id)
-    #tagcount.voters.
-    vote,created = TagVotes.objects.get_or_create(user=request.user,tag=tagcount)
+    tagcount = TagCount.objects.get(id=tag_id)
+    vote,created = TagVote.objects.get_or_create(user=request.user,tag=tagcount)
     if action == "up":
         vote.way = 1
     elif action == "down":
@@ -235,6 +256,6 @@ def addFormat(request,release_id):
             u.object_id = format.id
             u.save()
             return HttpResponseRedirect(reverse(albumPage,kwargs={'album_id':release.album.id}))
-    return render_to_response('release/addFormat.html',context_instance=RequestContext(request,{"release":release,
+    return render_to_response('music/release/addFormat.html',context_instance=RequestContext(request,{"release":release,
                                                                                                 "formatform":formatform,
                                                                                                 "torrentform":torrentform}))

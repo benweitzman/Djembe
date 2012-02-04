@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="page-header">
+        <h3>Artists</h3>
+    </div>
+    <div class="pull-right">
+        <ul class="linkbox">
+            <li>[<a href="{%url plugins.music.views.addArtist %}">New Artist</a>]</li>
+        </ul>
+    </div>
+    {% if artists %}
+        <table>
+            <tr class="colhead">
+                <td>Name</td>
+                <td>#Albums</td>
+                <td>Time</td>
+            </tr>
+            {% for artist in artists %}
+                <tr>
+                    <td>
+                        <a href="{% url plugins.music.views.artistPage artist_id=artist.id%}">{{ artist.name }}</a>
+                        <ul class="flatlist">
+                         {%comment%}   {% if artist.album_set.all %}
+                                {% for album in artist.album_set.all %}
+                                    <li><a href="{%url plugins.music.views.albumPage album_id=album.id%}">{{ album}}</a></li>
+                                    {% if album.tags.all %}
+                                        <h6>Tags</h6>
+                                        <ul>
+                                            {% for tag in album.tags.all %}
+                                                <li>{{ tag.name }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                {% endfor %}
+
+                        {% else %}
+                            <li>no albums</li>
+                        {% endif %}{%endcomment%}
+                            {% for tag,count in artist.taglist %}
+                                <li>{{tag}}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>{{artist.album_set.count}}</td>
+                    <td>{{artist.sort|timesince}} ago</td>
+                </tr>
+            {%  endfor %}
+        </table>
+    {%  else %}
+        No artists available.
+    {% endif %}
+{% endblock %}

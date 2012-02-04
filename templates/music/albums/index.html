@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+    <div class="page-header">
+        <h3>Albums</h3>
+    </div>
+    <table>
+        <tr class="colhead">
+            <td>Album</td>
+            <td>Artist</td>
+            <td>Time</td>
+        </tr>
+        {% for album in albums %}
+            <tr>
+                <td>
+                    <a href="{{album.get_absolute_url}}">{{album.name}}</a>
+                    {% if album.tags.all %}
+                        <ul class="flatlist">
+                            {% for tag in album.tags.all %}
+                                <li>{{ tag.tag.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </td>
+                <td>
+                    {% for artist in album.artists.all %}
+                        <a href="{{artist.get_absolute_url}}">{{artist.name}}</a>
+                    {% endfor %}
+                </td>
+                <td>
+                    {% if album.sort %}
+                        {{album.sort|timesince}} ago
+                    {% else %}
+                        No torrents
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

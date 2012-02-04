@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+{% block content %}
+    <script src="{%  static 'scripts/dynamic-formset.js' %}"></script>
+    <script type="text/javascript">
+    <!--
+    $(function () {
+        autocomplete($(".dynamic-form input"),"artists",false);
+        $('.add-row').click(function() {
+    	    return addForm(this, 'form');
+        });
+        $('.delete-row').click(function() {
+    	    return deleteForm(this, 'form');
+        });
+        console.log($(".dynamic-form input"));
+        jQuery.fn.nextUntil = function(selector) {
+            iter = this.next();
+            while (iter && !iter.is(selector)) {
+                iter = iter.next();
+            }
+            return iter;
+        }
+        $(".dynamic-form input").change(function (e) {
+            $.post('/ajax/getIds/',
+                    {name:e.target.value,
+                    csrfmiddlewaretoken:"{{ csrf_token }}"},
+                    function (response) {
+                        ids = JSON.parse(response)
+                        console.log(ids)
+                        options = ""
+                        for (index in ids) {
+                            id = ids[index];
+                            options += "<option value="+id.id+">"+id.id+"</option>"
+                        }
+                        $(e.target).nextUntil("select").html(options);
+                        if (ids.length>1) {
+                            $(e.target).nextUntil("select").attr("style","");
+                        } else {
+                            $(e.target).nextUntil("select").attr("style","display:none");
+                        }
+                        if (ids.length==0) {
+                            $(e.target).parent(".clearfix").addClass("warning");
+                            $(e.target).next(".help-inline").remove();
+                            $("<span class='help-inline'>No artist exists with that name, one will be created</span>").insertAfter($(e.target))
+                        } else {
+                            $(e.target).parent(".clearfix").removeClass("warning");
+                            $(e.target).next(".help-inline").remove();
+                        }
+                    }
+            );
+        });
+    });
+    //-->
+    </script>
+    <form action="" method="POST" class="form-stacked">
+        {% csrf_token %}
+        <label>Artists [<a href="#" class="add-row">+</a>] [<a href="#" class="delete-row">-</a>] </label>
+         {{ artists.management_form }}
+            {% for aform in artists %}
+                <div class="dynamic-form clearfix">
+                {%  for field in aform %}
+                    {{ field.errors }}
+                    {{ field }}
+                {% endfor %}
+                </div>
+            {% endfor %}
+        {{form.as_p}}
+        <div class="actions">
+            <input type="submit" class="btn primary"/>
+        </div>
+    </form>
+    {{ form.media }}
+
+{% endblock %}

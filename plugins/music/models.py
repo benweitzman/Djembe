@@ -3,7 +3,7 @@ from django.db.models import Sum
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
 from forum.models import Post
-from tags.models import Tag
+from tags.models import Tag, TagCount, TagVote
 from photo.models import Photo
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
@@ -43,11 +43,11 @@ class Album(models.Model):
     #releases = models.ManyToManyField('Release',blank=True,related_name='album')
     name = models.CharField(max_length=100)
     released = models.IntegerField('Year released')
-    tags = models.ManyToManyField(Tag,blank=True, through='TagCount')
+    tags = models.ManyToManyField(TagCount)
     photos = models.ManyToManyField(Photo,blank=True)
     releaseType = models.CharField(max_length=15,choices=RELEASE_TYPE,default="album")
     albumInfo = models.TextField(blank=True,null=True)
-    comments = models.ManyToManyField(Post)
+    comments = models.ManyToManyField(Post,editable=False)
 
     @models.permalink
     def get_absolute_url(self):
@@ -84,10 +84,10 @@ class Artist(models.Model):
         for album in self.album_set.all():
             album_tags = album.tags.all()
             for tag in album_tags:
-                if tag.name in tags:
-                    tags[tag.name] += 1
+                if tag.tag.name in tags:
+                    tags[tag.tag.name] += 1
                 else:
-                    tags[tag.name] = 1
+                    tags[tag.tag.name] = 1
         tags = tags.items()
         tags.sort(key=lambda tup:tup[1],reverse=True)
         return tags
@@ -146,7 +146,7 @@ class AlbumFormat(models.Model):
         return self.release.album.name+" ("+str(self.release.album.released)+") ["+self.format.upper()+"]"
 
 
-
+"""
 class TagVotes(models.Model):
     tag = models.ForeignKey('TagCount')
     user = models.ForeignKey(User)
@@ -172,4 +172,4 @@ class TagCount(models.Model):
         count = 15
         votes = self.tagvotes_set.aggregate(count=Sum('way'))['count']
         if votes: count += votes
-        return count
+        return count"""

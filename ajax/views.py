@@ -15,6 +15,14 @@ def checkUnique(request):
                 message = True
     return HttpResponse(simplejson.dumps(message))
 
+def getIds(request):
+    if request.is_ajax or True:
+        name = request.POST.get('name')
+        artists = Artist.objects.filter(name=name).values('id')
+        if artists:
+            return HttpResponse(simplejson.dumps(list(artists)))
+    return HttpResponse("[]")
+
 def index(request):
     message= "[]"
     if request.is_ajax() or True:

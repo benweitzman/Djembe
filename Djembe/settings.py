@@ -38,6 +38,8 @@ LANGUAGE_CODE = 'en-us'
 
 SITE_ID = 1
 
+INTERNAL_IPS=('127.0.0.1',)
+
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
@@ -63,7 +65,7 @@ MEDIA_ROOT = os.path.join(PROJECT_ROOT_PATH,"media")
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = 'http://localhost:8000/media/'
+MEDIA_URL = 'http://shakazulu.cream.ly/media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -73,7 +75,7 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT_PATH,"static")
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
-STATIC_URL = 'http://localhost:8000/static/'
+STATIC_URL = 'http://0.0.0.0:8000/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -106,7 +108,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
     'Djembe.login_required_middleware.LoginRequiredMiddleware',
+    #'Djembe.stats_middleware.StatsMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -150,6 +154,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'annoying',
     'plugins.music',
+    'plugins.movies',
     'tags',
     'photo',
     'ajax',
@@ -164,6 +169,7 @@ INSTALLED_APPS = (
     #'haystack',
     #'messages',
     # Uncomment the next line to enable admin documentation:
+    #'debug_toolbar',
      'django.contrib.admindocs',
 )
 

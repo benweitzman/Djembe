@@ -2,10 +2,12 @@
 {% load i18n %}
 
 {% block content %}
-    <ul class="breadcrumb">
-        <li><a href="{% url forum.views.index %}">Forums</a><span class="divider">/</span></li>
-        <li class="active">{{ forum.title }}</li>
-    </ul>
+    <div class="page-header">
+        <ul class="breadcrumb">
+            <li><a href="{% url forum.views.index %}">Forums</a><span class="divider">/</span></li>
+            <li class="active">{{ forum.title }}</li>
+        </ul>
+    </div>
     <div id="forumActions">
         [<a href="#" onclick="$('#newThread').slideToggle()">New Thread</a>]
     </div>

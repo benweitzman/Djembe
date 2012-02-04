@@ -32,15 +32,17 @@
 {% endmacro %}
 
 {% block content %}
-    <ul class="breadcrumb">
-        <li><a href="{% url forum.views.index %}">Forums</a><span class="divider">/</span></li>
-        <li>
-            <a href="{% url forum.views.index %}forum/{{ thread.forum_set.get.id }}">
-            {{ thread.forum_set.get.title }}</a>
-            <span class="divider">/</span>
-        </li>
-        <li class="active">{{ thread.title }}</li>
-    </ul>
+    <div class="page-header">
+        <ul class="breadcrumb">
+            <li><a href="{% url forum.views.index %}">Forums</a><span class="divider">/</span></li>
+            <li>
+                <a href="{% url forum.views.index %}forum/{{ thread.forum_set.get.id }}">
+                    {{ thread.forum_set.get.title }}</a>
+                <span class="divider">/</span>
+            </li>
+            <li class="active">{{ thread.title }}</li>
+        </ul>
+    </div>
     <div class="paginator">
         {% usemacro paginator %}
     </div>

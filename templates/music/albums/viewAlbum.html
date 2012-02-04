@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load djembe_filters %}
+{% load macros %}
+
+{% macro paginator %}
+    {% if posts.has_other_pages %}
+        <div class="pagination">
+            <ul style="display:inline-block;float:none">
+                {% if posts.has_previous %}
+
+                    <li class="first"><a href="{{album.get_absolute_url}}#posts">&lt;&lt; First</a></li>
+                    <li><a href="{{album.get_absolute_url}}?page={{posts.previous_page_number}}#posts">&lt; Prev</a></li>
+                {% endif %}
+                {% if posts.has_other_pages %}
+                    {% for index, page in showPages.items %}
+                        {% if page.start_index == posts.start_index %}
+                            <li class="active"><a>{{page.start_index}}-{{page.end_index}}</a></li>
+                        {% else %}
+                            <li><a href="{{album.get_absolute_url}}?page={{index|add:startPage|add:1}}#posts">
+                                {{page.start_index}}-{{page.end_index}}
+                            </a></li>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                {% if posts.has_next %}
+                    <li><a href="{{album.get_absolute_url}}?page={{posts.next_page_number}}#posts"> Next &gt;</a></li>
+                    <li class="next"><a href="{{album.get_absolute_url}}?page={{pages|length}}#posts"> Last &gt;&gt;</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    {% endif %}
+{% endmacro %}
+{% block content %}
+    <script>
+        function toggleRelease(id,c,e) {
+            if (c.innerHTML=="+") {
+                c.innerHTML = "-";
+                $(".release"+id).removeClass("releaseCollapsed");
+            } else {
+                c.innerHTML = "+";
+                $(".release"+id).addClass("releaseCollapsed");
+            }
+        }
+
+        function toggleInfo(id) {
+            if ($(".format"+id).hasClass("infoCollapsed")) {
+                $(".format"+id).removeClass("infoCollapsed")
+            } else {
+                $(".format"+id).addClass("infoCollapsed")
+            }
+        }
+    </script>
+    {% if preview %}
+        <div class="row">
+            <form method="POST" action="" class="span7 offset4">
+                {% csrf_token %}
+                Does this look ok?
+                <div class="actions">
+                    <a href="#" class="btn primary">Yes</a>
+                    <input type="submit" name="remove" class="btn" value="No" />
+                </div>
+            </form>
+        </div>
+    {% endif %}
+    <div class="page-header">
+        <h3>
+            {% for artist in album.artists.all %}
+                <a href="{{artist.get_absolute_url}}">{{artist}}</a>
+                {% if not forloop.last %} & {% endif %}
+            {% endfor %} -
+            {{ album }}
+            [{{album.released}}]
+            [{{album.releaseType|capfirst}}]
+        </h3>
+    </div>
+    <div class="pull-right">
+        <ul class="linkbox">
+            <li>[<a href="{%url plugins.music.views.addRelease album_id=album.id%}">Add release</a>]</li>
+        </ul>
+    </div>
+    <div class="clear"></div>
+    <div class="row">
+        <div class="main span12">
+            <div class="releaseType">
+                <table>
+                    <tr class="colhead">
+                        <td>Torrents</td>
+                        <td class="size">Size</td>
+                        <td class="stat">&#8635;</td>
+                        <td class="stat">&uArr;</td>
+                        <td class="stat">&dArr;</td>
+                    </tr>
+                    {% for release in album.releases.all %}
+                        <tr>
+                            <td colspan="5">
+                                {% if release.albumformat_set.all %}
+                                    <a href="#" onclick="toggleRelease({{release.id}},this,event);return false;">-</a>
+                                {% endif %}
+                                <strong>{{release.format}}</strong>
+                                <span class="pull-right">[<a href="{%url plugins.music.views.addFormat release_id=release.id%}">Add format</a>]</span>
+                                <span class="clear"></span>
+                            </td>
+                        </tr>
+                        {% for format in release.albumformat_set.all %}
+                            <tr class="release{{release.id}}">
+                                <td>
+                                    »
+                                    <a href="#" onclick="toggleInfo({{format.id}});return false">
+                                        {{format.format|upper}} / {{format.bitrate|capfirst}}
+                                    </a>
+                                    <span class="pull-right">
+                                        [
+                                        <a href="{%url torrent.views.get format.torrent.id%}">DL</a>
+                                        ]
+                                    </span>
+                                </td>
+                                <td>
+                                    {{format.torrent.size|filesizeformat}}
+                                </td>
+                                <td>
+                                    {{format.torrent.downloaded}}
+                                </td>
+                                <td>
+                                    {{format.torrent.getSeeders}}
+                                </td>
+                                <td>
+                                    {{format.torrent.getLeechers}}
+                                </td>
+                            </tr>
+                            <tr class="release{{release.id}} format{{format.id}} infoCollapsed">
+                                <td colspan="5">
+                                    Uploaded by
+                                    <a href="{%url userprofile.views.view format.torrent.user%}">
+                                        {{format.torrent.user}}
+                                    </a>
+                                    {{format.torrent.added|timesince}} ago
+                                    <br/>
+                                    <div class="center">
+                                        <a href="#" onclick="$('.peerlist{{format.id}}').hide();$('.filelist{{format.id}}').toggle();return false;">(View Filelist)</a>
+                                        <a href="#" onclick="$('.filelist{{format.id}}').hide();$('.peerlist{{format.id}}').toggle();return false;">(View Peerlist)</a>
+                                    </div>
+                                    <table class="peerlist{{format.id}}" style="display:none">
+                                        <tr class="colhead">
+                                            <td>User</td>
+                                            <td>Up</td>
+                                            <td>%</td>
+                                        </tr>
+                                        {% for peer in format.torrent.peers.all %}
+                                            <tr>
+                                                <td>{{peer.user}}</td>
+                                                <td>{{peer.uploaded|filesizeformat}}</td>
+                                                <td>{{peer.left|percentageleft:format.torrent.size}}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
+                                    <table class="filelist{{format.id}}" style="display:none">
+                                        <tr class="colhead">
+                                            <td>File Name</td>
+                                            <td>Size</td>
+                                        </tr>
+                                        {% if format.torrent.data.length %}
+                                            <tr>
+                                                <td>{{format.torrent.data.name}}</td>
+                                                <td>{{format.torrent.data.length|filesizeformat}}</td>
+                                            </tr>
+
+                                        {% else %}
+                                            {% for file in format.torrent.data.files %}
+                                                <tr>
+                                                    <td>{{file.path.0}}</td>
+                                                    <td>{{file.length|filesizeformat}}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </table>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="box">
+                <div class="head">Album Info</div>
+                <div class="pad">
+                    {{album.albumInfo}}
+                </div>
+            </div>
+            <div class="paginator">
+                {% usemacro paginator %}
+            </div>
+            <div id="posts">
+                {% for post in posts.object_list %}
+                    <table class="post" id="post{{post.id}}">
+                        <tr>
+                            <td colspan="2" class="head">
+                                <a href="{{album.get_absolute_url}}?post={{post.id}}#post{{post.id}}">#{{ post.id }}</a>
+                                <a href="/users/{{ post.poster.username }}">
+                                    {{ post.poster.username }}
+                                </a>
+                                {{ post.datePosted|timesince }} ago
+                                <a href="#">&uarr;</a>
+                            </td>
+                        </tr>
+                        <tr class="body">
+                            <td class="avatar">
+                                <img src="{{ post.poster.get_profile.avatar }}" />
+                            </td>
+                            <td class="text">
+                                <div>
+                                    {{ post.text|linebreaksbr }}
+                                    {% if post.editor != NULL %}
+                                        <br/><br/>
+                                        Last edited by <a href="/users/{{post.editor.username}}">{{post.editor.username}}</a>
+                                        {% with post.dateModified|timesince as delta %}
+                                            {% ifequal delta "0 minutes" %}
+                                                just now
+                                            {% else %}
+                                                {{ post.dateModified|timesince }} ago
+                                            {% endifequal %}
+                                        {% endwith %}
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                {% endfor %}
+            </div>
+            <div class="paginator">
+                {% usemacro paginator %}
+            </div>
+            <div id="newPost">
+                <h3>Post Reply</h3>
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <textarea name="body"></textarea>
+                    <div class="actions">
+                        <input type="submit"  name="commentform" value="Submit" class="btn primary"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="sidebar span4">
+            {% if album.photos.all %}
+                <div class="box">
+                    <div class="head">Cover</div>
+                    <div class="pad">
+                        <img src="{{album.photos.all.0.name}}"/>
+                    </div>
+                </div>
+            {% else %}
+                <div class="box">
+                    <div class="head">Add Cover</div>
+                    <div class="pad">
+                        <form action="" method="POST" class="form-stacked" style="padding-left: 0">
+                            {% csrf_token %}
+                            {{photoForm.as_p}}
+                            <input type="submit" value="Submit" class="btn primary" name="photoform"/>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+            {% if album.tags.all %}
+                <div class="box">
+                    <div class="head">Tags</div>
+                    <div class="pad">
+                        <ul>
+                            {% for tagcount in album.tags.all %}
+                                <li>
+                                    <span class="pull-left">{{ tagcount.tag.name }}</span>
+                                    <span class="pull-right">
+                                        [
+                                        <a href="{%url plugins.music.views.tagVote album_id=album.id tag_id=tagcount.id action='down'%}">-</a>
+                                        ]
+                                        {{ tagcount.getCount }}
+                                        [
+                                        <a href="{%url plugins.music.views.tagVote album_id=album.id tag_id=tagcount.id action='up'%}">+</a>
+                                        ]
+                                        {% if user.is_staff %}
+                                            [
+                                            <a href="#">x</a>
+                                            ]
+                                        {% endif %}
+                                    </span>
+                                    <div class="clear"></div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="box">
+                <div class="head">Add Tag</div>
+                <div class="pad">
+                    <form action="./addtag/" method="POST">
+                        {% csrf_token %}
+                        <input type="text" name="tag"/>
+                        <br /><br />
+                        <input type="submit" value="Add Tag" class="btn primary"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+{% endblock %}

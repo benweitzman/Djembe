@@ -7,7 +7,7 @@ body {
     background: #eee !important;
     margin: 0;
     padding: 0;
-    padding-top:60px !important;
+    padding-top:40px !important;
     width:100%;
     height:100%;
     font: 9pt/14pt 'Lucida Grande',Helvetica,Arial,sans-serif
@@ -236,6 +236,7 @@ table .lastPoster {
     text-align: center;
 }
 
+
 #userAvatar img {
     width:150px;
 }
@@ -303,7 +304,11 @@ tr.tableCollapsed,tr.groupCollapsed,tr.releaseCollapsed,tr.infoCollapsed {
 }
 
 .sidebar img {
-    max-width:215px;
+    max-width:100%;
+}
+
+.sidebar input {
+    max-width:95%;
 }
 
 .sidebar ul {
@@ -329,7 +334,7 @@ a.hide_torrents {
 }
 
 .releaseTypeBox {
-    background: #f8f8f8;
+    background: #e8e8e8;
     border: none;
     padding: 10px;
     text-align: center;
@@ -345,6 +350,13 @@ a.hide_torrents {
     line-height: 18pt;
 }
 
+.releaseTypeBox a:before {
+    content: "[";
+}
+.releaseTypeBox a:after {
+    content: "]";
+}
+
 .releaseTypeBox a:hover {
     color: #999;
     text-decoration: none;
@@ -356,7 +368,7 @@ a.hide_torrents {
     height:100%;
     top:0;
     display:none;
-    z-index: 10000000000;
+    z-index: 9999;
     text-align: center;
 }
 
@@ -365,7 +377,7 @@ a.hide_torrents {
     height:100%;
     text-align: center;
     overflow:auto !important;
-    position: fixed;
+    /*position: fixed;*/
     margin:auto;
     top:10%;
     left:0;

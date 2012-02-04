@@ -2,13 +2,15 @@
 {% load i18n %}
 
 {% block content %}
-    <ul class="breadcrumb">
-        <li class="active">Forums</li>
-    </ul>
+    <div class="page-header">
+        <ul class="breadcrumb">
+            <li class="active">Forums</li>
+        </ul>
+    </div>
     {% regroup forums by category as catforums %}
     {% for category in catforums %}
         <div class="category">
-            <div class="categoryHead">{{ category.grouper }}</div>
+            <h3>{{ category.grouper }}</h3>
             <div class="forums">
                 <table>
                     <tr class="colhead">

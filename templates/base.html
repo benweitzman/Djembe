@@ -42,7 +42,8 @@
 
             });
         }
-        function autocomplete(a,b) {
+        function autocomplete(a,b,linking) {
+            linking = typeof(linking) != 'undefined' ? linking : true;
             a.data("type",b)
             a.attr("autocomplete","off");
             a.focus(function (e) {
@@ -164,7 +165,11 @@
                                        $(e.target).removeClass("autoselect");
                                     });
                                     $("#autocomplete div").mousedown(function(e) {
-                                       window.location = $(e.target).data("link")
+                                        if (linking) {
+                                            window.location = $(e.target).data("link")
+                                        } else {
+                                            a.val($(e.target).html());
+                                        }
                                     });
                                 }
                         );
@@ -174,17 +179,52 @@
         }
         ctrldown = spacedown = spaceisdown = false;
         $(document).ready(function () {
-            for (i=0;i<$("#topNav li a").length;i++) {
-              if ($("#topNav li a")[i].pathname == window.location.pathname) {
-                  $($("#topNav li")[i]).addClass("active")
+            for (i=0;i<$(".nav li a").length;i++) {
+              if ($(".nav li a")[i].pathname == window.location.pathname && $($(".nav li a")[i]).attr("href") != "#") {
+                  $($(".nav li")[i]).addClass("active")
               }
             }
             $("img").click(function (e) {
                 $("#stage").html(e.target.outerHTML);
+                pos = $("#stage").css("position");
+                $("#stage").css("position","fixed");
                 $("#lightbox").css("display","block");
-                $("#lightbox").click(function () {
-                    $("#lightbox").css("display","none");
-                })
+                targetCSS = {
+                    width:$("#stage img").width()+"px",
+                    height:$("#stage img").height()+"px",
+                    top:$("#stage img").offset().top+"px",
+                    left:$("#stage img").offset().left+"px"
+                };
+                $("#lightbox").css("display","none");
+                $("#stage").css("position",pos);
+                returnCSS = {
+                   "position":"absolute",
+                   "width":$(e.target).width()+"px",
+                   "height":$(e.target).height()+"px",
+                    "top":($(e.target).offset().top-11-$("body").scrollTop())+"px",
+                    "left":$(e.target).offset().left-11+"px"
+                };
+                $("#stage img").data("return",returnCSS);
+                $("#stage img").data("source",$(e.target));
+                $("#stage img").css(returnCSS);
+                $("#lightbox").fadeIn(function () {
+                    $("#stage img").animate(targetCSS,500,function(){
+                        $("#lightbox").click(function () {
+                            ret = $("#stage img").data("source");
+                            returner = {
+                                "position":"absolute",
+                                "width":ret.width()+"px",
+                                "height":ret.height()+"px",
+                                "top":ret.offset().top-11-$("body").scrollTop()+"px",
+                                "left":ret.offset().left-11+"px",
+                            };
+                            $("#stage img").animate(returner,function () {
+                                $("#lightbox").fadeOut();
+                            });
+                            $(this).unbind("click");
+                        })
+                    });
+                });
             });
             addDefault($("#hSearchArtist input"));
             addDefault($("#hSearchAlbum input"));
@@ -279,24 +319,22 @@
             <a class="brand" href="/">Djembe</a>
             <ul class="nav" id="topNav">
                 <li><a href="/">Home</a></li>
-                <li><a href="{%url plugins.music.views.artistsIndex%}">Artists</a></li>
-                <li><a href="{%url plugins.music.views.albumsIndex%}">Albums</a></li>
+                <li class="dropdown" data-dropdown="dropdown">
+                    <a href="#" class="dropdown-toggle">Music</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{%url plugins.music.views.artistsIndex%}">Artists</a></li>
+                        <li><a href="{%url plugins.music.views.albumsIndex%}">Albums</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown" data-dropdown="dropdown">
+                    <a href="#" class="dropdown-toggle">Movies</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{%url plugins.movies.views.filmsIndex%}">Films</a></li>
+                        <li><a href="{%url plugins.movies.views.peopleIndex%}">People</a></li>
+                    </ul>
+                </li>
                 <li><a href="{%url forum.views.index%}">Forum</a></li>
             </ul>
-            <!--<ul class="nav">
-                <li><form name="albums" class="search" id="hSearchAlbum">
-                    <input type="text" name="album" value="Albums" class="span2"/>
-                </form></li>
-                <li><form name="artists" class="search" id="hSearchArtist" action="/artists/" method="GET">
-                    <input type="text" name="artist" value="Artists" class="span2"/>
-                </form></li>
-                <li><form name="users" class="search" id="hSearchUser" action="/user/" method="GET">
-                    <input type="text" name="username" value="Users" class="span2"/>
-                </form></li>
-                <li><form name="forums" class="search" id="hSearchForum" action="/forums/" method="GET">
-                    <input type="text" name="forum" value="Forums" class="span2" />
-                </form></li>
-            </ul>-->
             <ul class="nav secondary-nav">
                 <li class="dropdown" data-dropdown="dropdown">
                     <a href="#" class="dropdown-toggle">{{user.username}}</a>
@@ -327,16 +365,15 @@
 {% endblock %}
 
 <div class="container">
-    <div id="content">
+    <div id="content" class="content">
         {% block content %}{% endblock %}
     </div>
-
-
 </div>
 <footer class="footer">
     <div class="container">
         {% block footer %}
-        Made by Djembe, for you
+            Made by Djembe, for you<br/>
+            <!-- STATS: Total: %(totTime).2f Python: %(pyTime).2f DB: %(dbTime).2f Queries: %(queries)d -->
         {% endblock %}
     </div>
 </footer>

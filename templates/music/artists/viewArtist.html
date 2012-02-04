@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <script>
+        function toggleRelease(id,c,e) {
+            if (c.innerHTML=="+") {
+                c.innerHTML = "-";
+                $(".release"+id).removeClass("releaseCollapsed");
+            } else {
+                c.innerHTML = "+";
+                $(".release"+id).addClass("releaseCollapsed");
+            }
+        }
+        function toggleGroup(id,c,e) {
+            if (c.className=="show_torrents"){
+                c.className="hide_torrents";
+                $(".group"+id).removeClass("groupCollapsed")
+            }
+            else {
+                c.className="show_torrents";
+                $(".group"+id).addClass("groupCollapsed")
+            }
+        }
+        function toggleReleaseType(type) {
+            if (!$(".release_"+type).is(".tableCollapsed")) {
+                $(".release_"+type).addClass("tableCollapsed");
+            } else {
+                $(".release_"+type).removeClass("tableCollapsed");
+            }
+        }
+    </script>
+    <div class="page-header">
+        <h3>{{artist.name}}</h3>
+    </div>
+    <div class="pull-right">
+        <ul class="linkbox">
+            <li>[<a href="{%url plugins.music.views.editArtist artist_id=artist.id%}">Edit</a>]</li>
+            <li>[<a href="{%url plugins.music.views.addAlbum artist_id=artist.id%}">Add Album</a>]</li>
+        </ul>
+    </div>
+    <div class="clear"></div>
+    <div class="row">
+        <div class="main span12">
+        <div class="releaseTypeBox">
+            {% for releaseType,typeAlbums in albums.items %}
+                {% if typeAlbums %}
+                    <a href="#{{releaseType}}Table">{{releaseType}}s</a>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% for releaseType,typeAlbums in albums.items %}
+            {% if typeAlbums %}
+                <div class="releaseType" id="{{releaseType}}Table">
+                    <table>
+                        <tr class="colhead">
+                            <td class="collapser"></td>
+                            <td>
+                                {{releaseType}}s
+                                <a href="#" onclick="toggleReleaseType('{{releaseType}}');return false;">(View)</a>
+                            </td>
+                            <td class="size">Size</td>
+                            <td class="stat">&#8635;</td>
+                            <td class="stat">&uArr;</td>
+                            <td class="stat">&dArr;</td>
+                        </tr>
+
+                        {% for album in typeAlbums %}
+                            <tr class="release_{{releaseType}} group">
+                                <td><a href="#" onclick="toggleGroup({{album.id}},this,event);return false;" class="show_torrents"></a></td>
+                                <td colspan="5">
+                                    <h3 class="pull-left">{{album.released}} - <a href="{%url plugins.music.views.albumPage album_id=album.id%}">{{album.name}}</a></h3>
+                                    <span class="pull-right">[<a href="{%url plugins.music.views.addRelease album_id=album.id%}">Add release</a>]</span>
+                                    <div class="clear"></div>
+                                    {% for tag in album.tags.all %}
+                                        {{tag}}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            {% for release in album.releases.all %}
+                                <tr class="release_{{releaseType}} groupCollapsed group{{album.id}}">
+                                    <td colspan="6">
+                                        <span class="pull-left">
+                                            {% if release.albumformat_set.all %}
+                                                <a href="#" onclick="toggleRelease({{release.id}},this,event);return false;">+</a>
+                                            {% endif %}
+                                            <strong>{{release.format}}</strong>
+                                        </span>
+                                        <span class="pull-right">[<a href="{%url plugins.music.views.addFormat release_id=release.id%}">Add format</a>]</span>
+                                        <span class="clear"></span>
+                                    </td>
+                                </tr>
+                                {% for format in release.albumformat_set.all %}
+                                    <tr class="release_{{releaseType}} groupCollapsed group{{album.id}} releaseCollapsed release{{release.id}}">
+                                        <td colspan="2">
+                                            » {{format.format|upper}} / {{format.bitrate|capfirst}}
+                                            <span class="pull-right">
+                                                [
+                                                <a href="{%url torrent.views.get format.torrent.id%}">DL</a>
+                                                ]
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {{format.torrent.size|filesizeformat}}
+                                        </td>
+                                        <td>
+                                            {{format.torrent.downloaded}}
+                                        </td>
+                                        <td>
+                                            {{format.torrent.seeders}}
+                                        </td>
+                                        <td>
+                                            {{format.torrent.leechers}}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+
+                            {% endfor %}
+                        {% endfor %}
+                    </table>
+                </div>
+            {% endif %}
+        {% endfor %}
+        <div class="box">
+            <div class="head">Artist Info</div>
+            <div class="pad">
+                {{artist.artistInfo}}
+            </div>
+        </div>
+    </div>
+        <div class="sidebar span4">
+        {% if artist.photo.all %}
+            <div class="box">
+                <div class="head">
+                    {{artist}}
+                </div>
+                <div class="pad">
+                    <img src="{{artist.photo.get.name}}"/>
+                </div>
+            </div>
+        {% else %}
+            <div class="box">
+                <div class="head">Add Image</div>
+                <div class="pad">
+                    <form action="" method="POST" class="form-stacked" style="padding-left: 0">
+                        {% csrf_token %}
+                        {{photoForm.as_p}}
+                        <input type="submit" class="btn primary"/>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+        {% if artist.taglist %}
+            <div class="box">
+                <div class="head">Tags</div>
+                <div class="pad">
+                    {% for tag, count in artist.taglist %}
+                        {{tag}} ({{count}})<br/>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        <div class="box">
+            <div class="head">
+                Statistics
+            </div>
+            <div class="pad">
+                <ul>
+                    <li>Number of groups: {{artist.album_set.count}}</li>
+                    <li>Number of torrents: {{artist.torrent__count}}</li>
+                    <li>Number of seeders: {{artist.seeders}}</li>
+                    <li>Number of leeches: {{artist.leechers}}</li>
+                    <li>Number of snatches: {{artist.snatches}}</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    </div>
+{% endblock %}

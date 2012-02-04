@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+    <div class="page-header">
+        <h3>People</h3>
+    </div>
+    <table>
+        <tr class="colhead">
+            <td>Person</td>
+            <td>#Directed</td>
+            <td>#Produced</td>
+            <td>#Written</td>
+            <td>#Acted In</td>
+        </tr>
+        {% for person in people %}
+            <tr>
+                <td>{{ person.name }}</td>
+                <td>
+                    {{ person.directed.all|length }}
+                </td>
+                <td>
+                    {{ person.produced.all|length }}
+                </td>
+                <td>
+                    {{ person.written.all|length }}
+                </td>
+                <td>{{ person.actedIn.all|length }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

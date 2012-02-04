@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+    <div class="page-header">
+        <h3>Films</h3>
+    </div>
+    <table>
+        <tr class="colhead">
+            <td>Film</td>
+            <td>Director</td>
+        </tr>
+        {% for film in films %}
+            <tr>
+                <td><a href="{{ film.get_absolute_url }}">{{ film.title }}</a></td>
+                <td>
+                    {% for director in film.directors.all %}
+                        {{ director.name }}
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

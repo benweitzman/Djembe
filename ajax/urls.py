@@ -5,4 +5,5 @@ urlpatterns = patterns('ajax.views',
     url(r'^unique/$','checkUnique'),
     url(r'^previewpost/$','postPreview'),
     url(r'^editpost/$','editPost'),
+    url(r'^getIds/$','getIds'),
 )

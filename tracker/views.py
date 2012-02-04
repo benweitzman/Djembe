@@ -36,6 +36,14 @@ def announce(request,key):
             except UserProfile.DoesNotExist:
                 raise ValueError('you are not allowed on this tracker')
 
+        """
+        Need to put something here to generically determine if
+        a user is able to download this torrent based on the
+        model and torrent, mainly for the backup system but
+        will also apply to class restricted downloads in other
+        models. 
+        """
+
         if event:
             if 'started' in event:
                 peer, created = Peer.objects.get_or_create(peer_id=peer_id,torrent=torrent,ip=ip,port=port)
@@ -81,6 +89,11 @@ def announce(request,key):
         peer.left=left
         peer.save()
         profile.save()
+
+        """
+        And again something needs to go here to update a model
+        generically
+        """
         if numwant:
                 # The random order is expensive. by caching for the announce interval, we guarantee that
                 # a random peer list will be generated every announce period and will be served to all clients
