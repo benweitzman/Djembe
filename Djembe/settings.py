@@ -51,8 +51,10 @@ USE_L10N = True
 PROJECT_ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 config = RawConfigParser()
-config.read(os.path.join(PROJECT_ROOT_PATH,'config.ini'))
-
+try:
+	config.read(os.path.join(PROJECT_ROOT_PATH,'config.ini'))
+except:
+	config.read(os.path.join(PROJECT_ROOT_PATH,'config_blank.ini'))
 EMAIL_HOST = config.get('email','EMAIL_HOST')
 EMAIL_HOST_USER = config.get('email','EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config.get('email','EMAIL_HOST_PASSWORD')
