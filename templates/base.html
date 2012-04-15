@@ -3,11 +3,11 @@
 <html>
 <head>
     <title>{% block title %}Djembe{% endblock %}</title>
-    <link rel="stylesheet" href="{% static "styles/main.css" %}" />
-    <link rel="stylesheet" href="{% static "styles/bootstrap.min.css" %}">
-    <script src="{% static "scripts/jquery-1.7.1.min.js" %}"></script>
-    <script src="{% static "scripts/bootstrap-dropdown.js" %}"></script>
-    <script src="{% static "scripts/bootstrap-modal.js" %}"></script>
+    <link rel="stylesheet" href="/{% static "styles/main.css" %}" />
+    <link rel="stylesheet" href="/{% static "styles/bootstrap.min.css" %}">
+    <script src="/{% static "scripts/jquery-1.7.1.min.js" %}"></script>
+    <script src="/{% static "scripts/bootstrap-dropdown.js" %}"></script>
+    <script src="/{% static "scripts/bootstrap-modal.js" %}"></script>
     <script>
         function addDefault(a) {
             a.data("default",a.val());
@@ -313,21 +313,21 @@
     </div>
 </div>
 {% block header %}
-<div class="topbar">
-    <div class="fill">
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
         <div class="container">
             <a class="brand" href="/">Djembe</a>
             <ul class="nav" id="topNav">
                 <li><a href="/">Home</a></li>
                 <li class="dropdown" data-dropdown="dropdown">
-                    <a href="#" class="dropdown-toggle">Music</a>
+                    <a href="#" class="dropdown-toggle">Music <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="{%url plugins.music.views.artistsIndex%}">Artists</a></li>
                         <li><a href="{%url plugins.music.views.albumsIndex%}">Albums</a></li>
                     </ul>
                 </li>
                 <li class="dropdown" data-dropdown="dropdown">
-                    <a href="#" class="dropdown-toggle">Movies</a>
+                    <a href="#" class="dropdown-toggle">Movies <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="{%url plugins.movies.views.filmsIndex%}">Films</a></li>
                         <li><a href="{%url plugins.movies.views.peopleIndex%}">People</a></li>
@@ -335,9 +335,9 @@
                 </li>
                 <li><a href="{%url forum.views.index%}">Forum</a></li>
             </ul>
-            <ul class="nav secondary-nav">
+            <ul class="nav pull-right">
                 <li class="dropdown" data-dropdown="dropdown">
-                    <a href="#" class="dropdown-toggle">{{user.username}}</a>
+                    <a href="#" class="dropdown-toggle">{{user.username}} <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="{%url userprofile.views.mine%}">View Profile</a></li>
                         <li><a href="{%url userprofile.views.editProfile%}">Edit</a></li>

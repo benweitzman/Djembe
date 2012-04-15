@@ -400,3 +400,7 @@ a.hide_torrents {
 .preview, .edit {
     display:none;
 }
+
+.breadcrumb h3 {
+    display: inline;
+}

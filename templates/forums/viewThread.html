@@ -34,13 +34,15 @@
 {% block content %}
     <div class="page-header">
         <ul class="breadcrumb">
-            <li><a href="{% url forum.views.index %}">Forums</a><span class="divider">/</span></li>
             <li>
-                <a href="{% url forum.views.index %}forum/{{ thread.forum_set.get.id }}">
-                    {{ thread.forum_set.get.title }}</a>
-                <span class="divider">/</span>
+                <h3><a href="{% url forum.views.index %}">Forums</a><span class="divider">/</span></h3>
             </li>
-            <li class="active">{{ thread.title }}</li>
+            <li>
+                <h3><a href="{% url forum.views.index %}forum/{{ thread.forum_set.get.id }}">
+                    {{ thread.forum_set.get.title }}</a>
+                <span class="divider">/</span></h3>
+            </li>
+            <li class="active"><h3>{{ thread.title }}</h3></li>
         </ul>
     </div>
     <div class="paginator">
