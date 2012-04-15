@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Djembe : Tracker frontend" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Djembe</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/benweitzman/Djembe">Fork Me on GitHub</a>
+
+          <h1 id="project_title">Djembe</h1>
+          <h2 id="project_tagline">Tracker frontend</h2>
+
+          <section id="downloads">
+            <a class="zip_download_link" href="https://github.com/benweitzman/Djembe/zipball/master">Download this project as a .zip file</a>
+            <a class="tar_download_link" href="https://github.com/benweitzman/Djembe/tarball/master">Download this project as a tar.gz file</a>
+          </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>DJEMBE
+A django based torrent tracker and frontend extended by plugins for different applications.</p>
+
+<p>Tracker:
+Operates identically to conventional trackers, just implemented in python. View
+ <a href="http://en.wikipedia.org/wiki/BitTorrent_tracker">http://en.wikipedia.org/wiki/BitTorrent_tracker</a> for more information. Based on
+ protocal defined: <a href="http://wiki.theory.org/BitTorrentSpecification">http://wiki.theory.org/BitTorrentSpecification</a></p>
+
+<p>The tracker uses a database of peers to log which users are downloading which
+ torrents and the progress attributed to said torrents.
+Each torrent is dynamically generated with an announce URL which includes the
+ users private key.</p>
+
+<p>Plugins:
+Each plugin defines one model that has a one-to-one relationship with a torrent.
+ These act as the 'atomic' unit of each plugin. These atomic units are grouped
+ together in increasingly complex ways to organize torrents in whatever way
+ makes sense for the given plugin.</p>
+
+<p>Music</p>
+
+<p>The top level model in Music is Artist. Each artist (or group of artist)
+   has a number of Albums, and each Album can have a number of Album Release
+   each having a number of Release Formats, the atomic unit for this plugin.
+   The general flow and UI is based off of what.cd</p>
+
+<p>Movies</p>
+
+<p>This plugin operates similarly to above: People &gt; Movie &gt; Edition &gt; Movie Format
+   (The relationship between Movie and People is split into four categories: Actors,
+   Producers, Writers, and Directors where Actors have an additional property relating
+   them to the movie, which is the Role).</p>
+
+<p>Backup</p>
+
+<p>The top level is the Backup User &gt; Backup &gt; Version. The Backup User requires a
+   special kind of UserProfile because of a number of special cases regarding ratio.
+  The Backup plugin is intended to create a platform for users to trade unused
+   harddrive space for offsite backup and redundancy. The rules governing the ratio
+   are as follows:</p>
+
+<pre><code>-Users have to backup other users content as much as they want their content
+ backed up. For example, if a User wants to back up a 1GB file with 5x redundancy
+ they will need to download a total of 5GB of other users content.
+
+-A priority system is associated with torrents that have not yet reached their
+ desired redundancy.
+
+-Each User of the site has a number of priority points that they can use to
+ incentivize users to backup their content. Priority points are assigned to
+ backups as a whole. Each version inherits the priority points of its parent.
+</code></pre>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Djembe maintained by <a href="https://github.com/benweitzman">benweitzman</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
